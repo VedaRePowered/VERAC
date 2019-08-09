@@ -10,7 +10,7 @@ end
 local tile = {}
 
 function tile:draw(scale, x, y)
-	love.graphics.draw(self.texture, x+self.offset.x, y+self.offset.y, 0, scale)
+	love.graphics.draw(self.texture, x+self.offset.x*scale, y+self.offset.y*scale, 0, scale/8)
 end
 
 function tileset:add(uuid, texture, origin, boxCollide, extraCollide)
@@ -20,8 +20,7 @@ function tileset:add(uuid, texture, origin, boxCollide, extraCollide)
 	self.uuids[uuid] = setmetatable({
 		uuid = uuid,
 		texture = texImage,
-		offset = {x=-origin.x*8, y=-origin.x*8},
-		center = origin,
+		offset = {x=-origin.x, y=-origin.y},
 		collide = boxCollide,
 		decoCollide = extraCollide,
 		width = texImage:getWidth()/8-1,

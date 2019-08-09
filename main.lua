@@ -16,7 +16,18 @@ function love.load()
 end
 
 function love.update(delta)
-
+	if love.keyboard.isDown("up") then
+		s.camera.y = s.camera.y - delta*8
+	end
+	if love.keyboard.isDown("down") then
+		s.camera.y = s.camera.y + delta*8
+	end
+	if love.keyboard.isDown("left") then
+		s.camera.x = s.camera.x - delta*8
+	end
+	if love.keyboard.isDown("right") then
+		s.camera.x = s.camera.x + delta*8
+	end
 end
 
 function love.draw()

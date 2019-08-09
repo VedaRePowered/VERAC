@@ -23,8 +23,8 @@ function world:setBlock(x, y, tile)
 	assert(x >= 1 and x <= self.width, "World position out of range.")
 	self:newRow(y)
 	self.tiles[y][x].uuid = tile.uuid
-	for i = x-tile.center.x, x-tile.center.x+tile.width do
-		for j = y-tile.center.y, y-tile.center.y+tile.height do
+	for i = x+tile.offset.x, x+tile.offset.x+tile.width do
+		for j = y+tile.offset.y, y+tile.offset.y+tile.height do
 			if i ~= x or j ~= y then
 				self:newRow(j)
 				table.insert(self.tiles[y][x].interseting, {x=i, y=j})
@@ -35,8 +35,8 @@ end
 
 function world:draw(tileset, cam) -- draw a region based around the camera's telemetry
 	local width, height = love.window.getMode()
-	local xMax, yMax = math.ceil(width/cam.scale/8/2), math.ceil(height/cam.scale/8/2)
-	local xPos, yPos = cam:getPosition()
+	local xMax, yMax = math.ceil(width/cam.scale/2), math.ceil(height/cam.scale/2)
+	local xPos, yPos = math.floor(cam.x), math.floor(cam.y)
 	local drawn = {}
 	local function drawTile(x, y)
 		if self.tiles[y][x].uuid and not drawn[x+y*self.width] then
@@ -47,9 +47,12 @@ function world:draw(tileset, cam) -- draw a region based around the camera's tel
 	end
 	for x = xPos-xMax, xPos+xMax do
 		for y = yPos-yMax, yPos+yMax do
+			local sx, sy = cam:toScreenPosition(x, y)
+			love.graphics.rectangle("line", sx, sy, 64, 64)
 			if self.tiles[y] and self.tiles[y][x] then
 				drawTile(x, y)
 				for _, t in ipairs(self.tiles[y][x].interseting) do
+					print(t.x, t.y)
 					drawTile(t.x, t.y)
 				end
 			end
