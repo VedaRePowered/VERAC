@@ -13,7 +13,7 @@ function world:newRow(y)
 		for i = 1, self.width do
 			self.tiles[y][i] = {
 				uuid = false, -- false for empty
-				interseting = {}
+				intersecting = {}
 			}
 		end
 	end
@@ -27,7 +27,7 @@ function world:setBlock(x, y, tile)
 		for j = y+tile.offset.y, y+tile.offset.y+tile.height do
 			if i ~= x or j ~= y then
 				self:newRow(j)
-				table.insert(self.tiles[y][x].interseting, {x=i, y=j})
+				table.insert(self.tiles[j][i].intersecting, {x=x, y=y})
 			end
 		end
 	end
@@ -51,8 +51,7 @@ function world:draw(tileset, cam) -- draw a region based around the camera's tel
 			love.graphics.rectangle("line", sx, sy, 64, 64)
 			if self.tiles[y] and self.tiles[y][x] then
 				drawTile(x, y)
-				for _, t in ipairs(self.tiles[y][x].interseting) do
-					print(t.x, t.y)
+				for _, t in ipairs(self.tiles[y][x].intersecting) do
 					drawTile(t.x, t.y)
 				end
 			end
