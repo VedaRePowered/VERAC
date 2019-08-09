@@ -1,7 +1,7 @@
 local camera = {}
 
 function camera.new()
-	return setmetatable({x=0, y=0, scale=100}, {__index=camera})
+	return setmetatable({x=0, y=0, scale=4}, {__index=camera})
 end
 
 function camera:glideTo(x, y, speed)
