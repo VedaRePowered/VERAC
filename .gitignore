@@ -1,0 +1,28 @@
+# Compiled Lua sources
+luac.out
+*.luac
+
+# build files
+*.zip
+build
+tmp
+
+# Object files
+*.o
+
+# Precompiled Headers
+*.gch
+
+# Libraries
+*.a
+
+# Executables
+*.exe
+*.app
+*.x86_64
+*.love
+*.AppImage
+
+# Editor temp files
+*~
+.vscode
