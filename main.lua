@@ -6,15 +6,17 @@ function love.load()
 	load "tileset"
 	load "world"
 	load "terrainGen"
+	load "collision"
 
 	s.camera = f.camera.new()
 	s.tileset = f.tileset.new()
 	s.world = f.world.new(64)
 	s.terrainGenerator = f.terrainGen.new(math.random(0, 0xFFFFFFFF))
+	s.colliderTest = f.collision.new(2, 2)
 
 	s.tileset:loadAssetPack("testTiles")
-
 	s.terrainGenerator:generateNext(s.tileset, s.world, 100)
+
 end
 
 function love.update(delta)
