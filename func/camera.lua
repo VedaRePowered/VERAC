@@ -1,7 +1,7 @@
 local camera = {}
 
 function camera.new()
-	return setmetatable({x=0, y=0, scale=64}, {__index=camera})
+	return setmetatable({x=32, y=50, scale=64}, {__index=camera})
 end
 
 function camera:glideTo(x, y, speed)
@@ -14,7 +14,7 @@ end
 
 function camera:toScreenPosition(wx, wy)
 	local width, height = love.window.getMode()
-	return (wx-self.x)*self.scale+width/2, (wy-self.y)*self.scale+height/2
+	return (wx-self.x)*self.scale+width/2, -(wy-self.y)*self.scale+height/2
 end
 
 function camera:toScreenSize(s)
@@ -23,7 +23,7 @@ end
 
 function camera:toWorldPosition(sx, sy)
 	local width, height = love.window.getMode()
-	return (sx-width/2)/self.scale+self.x, (sy-width/2)/self.scale+self.y
+	return (sx-width/2)/self.scale+self.x, (-sy+height/2)/self.scale+self.y
 end
 
 function camera:toWorldSize(s)

@@ -24,10 +24,12 @@ function world:setBlock(x, y, tile)
 	self:newRow(y)
 	self.tiles[y][x].uuid = tile.uuid
 	for i = x+tile.offset.x, x+tile.offset.x+tile.width do
-		for j = y+tile.offset.y, y+tile.offset.y+tile.height do
-			if i ~= x or j ~= y then
-				self:newRow(j)
-				table.insert(self.tiles[j][i].intersecting, {x=x, y=y})
+		if i > 0 and i <= self.width then
+			for j = y-tile.offset.y, y-tile.offset.y+tile.height do
+				if i ~= x or j ~= y then
+					self:newRow(j)
+					table.insert(self.tiles[j][i].intersecting, {x=x, y=y})
+				end
 			end
 		end
 	end
@@ -45,12 +47,17 @@ function world:draw(tileset, cam) -- draw a region based around the camera's tel
 			tileset:draw(self.tiles[y][x].uuid, cam.scale, sx, sy)
 		end
 	end
-	for x = xPos-xMax, xPos+xMax do
-		for y = yPos-yMax, yPos+yMax do
-			local sx, sy = cam:toScreenPosition(x, y)
-			love.graphics.rectangle("line", sx, sy, 64, 64)
+	for y = yPos-yMax+1, yPos+yMax+1 do
+		for x = xPos-xMax, xPos+xMax do
 			if self.tiles[y] and self.tiles[y][x] then
 				drawTile(x, y)
+			end
+		end
+	end
+	drawn = {}
+	for y = yPos-yMax+1, yPos+yMax+1 do
+		for x = xPos-xMax, xPos+xMax do
+			if self.tiles[y] and self.tiles[y][x] then
 				for _, t in ipairs(self.tiles[y][x].intersecting) do
 					drawTile(t.x, t.y)
 				end
