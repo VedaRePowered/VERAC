@@ -15,7 +15,7 @@ function love.load()
 	s.terrainGenerator = f.terrainGen.new(math.random(0, 0xFFFFFFFF))
 	s.buttonMap = f.buttons.new(1)
 
-	s.mainPlayer = f.player.new()
+	s.mainPlayer = f.player.new({1, 0, 0})
 	s.mainPlayer:warpTo(31, 55)
 
 	s.tileset:loadAssetPack("testTiles")
@@ -42,4 +42,5 @@ end
 
 function love.draw()
 	s.world:draw(s.tileset, s.camera)
+	s.mainPlayer:draw(s.camera)
 end
