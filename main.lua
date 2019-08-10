@@ -6,13 +6,17 @@ function love.load()
 	load "tileset"
 	load "world"
 	load "terrainGen"
-	load "collision"
+	load "buttons"
+	load "player"
 
 	s.camera = f.camera.new()
 	s.tileset = f.tileset.new()
 	s.world = f.world.new(64)
 	s.terrainGenerator = f.terrainGen.new(math.random(0, 0xFFFFFFFF))
-	s.colliderTest = f.collision.new(2, 2)
+	s.buttonMap = f.buttons.new(1)
+
+	s.mainPlayer = f.player.new()
+	s.mainPlayer:warpTo(31, 55)
 
 	s.tileset:loadAssetPack("testTiles")
 	s.terrainGenerator:generateNext(s.tileset, s.world, 100)
@@ -32,6 +36,8 @@ function love.update(delta)
 	if love.keyboard.isDown("left") then
 		s.camera.x = s.camera.x - delta*8
 	end
+	local k = s.buttonMap:get()
+	s.mainPlayer:updateLocal(s.world, s.camera, delta, k)
 end
 
 function love.draw()

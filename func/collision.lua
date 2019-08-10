@@ -11,11 +11,12 @@ function collision.new(width, height)
 	}, {__index=collision})
 end
 
-function collision:getPossibleCollisions(world)
+function collision:getPossibleCollisions(world, dx, dy)
+	local possibleCollisionsReversed = {}
 	local possibleCollisions = {}
-	local step = 1/math.max(math.abs(self.vx), math.abs(self.vy))
+	local step = 1/math.max(math.abs(dx), math.abs(dy))
 	for i = 0, 1, step do
-		local tx, ty = self.x+self.vx*i, self.y+self.vy*i
+		local tx, ty = self.x+dx*i, self.y+dy*i
 		local boxes = {}
 		local code = math.floor(tx) .. ":" .. math.floor(ty)
 		if not possibleCollisionsReversed[code] then
@@ -61,23 +62,23 @@ function collision:singleFaceCollide(px1, py1, px2, py2, lx1, lx2, ly) -- x and 
 	return nLy -- how far until hit
 end
 
-function collision:onePass(world)
-	local gx, gy = self.x+self.vx, self.y+self.vy -- goal
-	local nx, ny = self.x+self.vx, self.y+self.vy -- new
+function collision:onePass(world, delta)
+	local gx, gy = self.x+self.vx*delta, self.y+self.vy*delta -- goal
+	local nx, ny = self.x+self.vx*delta, self.y+self.vy*delta -- new
 	local hitY, hitX = false, false
 	local hEdge, vEdge = self.width/2, self.height/2
 
-	local blocks = self:getPossibleCollisions(world)
+	local blocks = self:getPossibleCollisions(world, self.vx*delta, self.vy*delta)
 	-- vertical collision
 	for _, pos in pairs(blocks) do
 		local b = {x=pos.x, y=pos.y, width=1, height=1} -- magic to make box out of world tile (TODO: extended blocks)
-		if self.vy > 0 then
+		if self.vy*delta > 0 then
 			local colliding = self:singleFaceCollide(self.x-vEdge, self.y+vEdge, gx-vEdge, gy+vEdge, b.x, b.x+b.width, b.y)
 			if colliding then
 				ny = b.y-vEdge
 				hitY = colliding
 			end
-		elseif self.vx < 0 then
+		elseif self.vy*delta < 0 then
 			local colliding = self:singleFaceCollide(self.x-vEdge, self.y-vEdge, gx-vEdge, gy-vEdge, b.x, b.x+b.width, b.y+b.height)
 			if colliding then
 				ny = b.y+b.height+vEdge
@@ -88,13 +89,13 @@ function collision:onePass(world)
 	-- horizontal collision
 	for _, pos in pairs(blocks) do
 		local b = {x=pos.x, y=pos.y, width=1, height=1} -- magic to make box out of world tile (TODO: extended blocks)
-		if dx > 0 then
+		if self.vx*delta > 0 then
 			local colliding = self:singleFaceCollide(self.y-hEdge, self.x+hEdge, gy-hEdge, gx+hEdge, b.y, b.y+b.height, b.x)
 			if colliding then
 				nx = b.x-hEdge
 				hitY = colliding
 			end
-		elseif dx < 0 then
+		elseif self.vx*delta < 0 then
 			local colliding = self:singleFaceCollide(self.y-hEdge, self.x-hEdge, gy-hEdge, gx-hEdge, b.y, b.y+b.height, b.x+b.width)
 			if colliding then
 				nx = b.x+b.width+hEdge
@@ -106,12 +107,12 @@ function collision:onePass(world)
 	return hitX, hitY, nx, ny
 end
 
-function collision:slide(world)
-	local hitX, hitY, nx, ny = collision:onePass(world)
+function collision:slide(world, delta)
+	local hitX, hitY, nx, ny = self:onePass(world, delta)
 	if hitY and (not hitX or hitY <= hitX) then
 		self.vy = 0
 		self.y = ny
-		local hitX, _, nx, _ = collision:onePass(world)
+		local hitX, _, nx, _ = self:onePass(world, delta)
 		self.x = nx
 		if hitX then
 			self.vx = 0
@@ -119,11 +120,13 @@ function collision:slide(world)
 	elseif hitX then
 		self.vx = 0
 		self.x = nx
-		local _, hitY, _, ny = collision:onePass(world)
+		local _, hitY, _, ny = self:onePass(world, delta)
 		self.y = ny
 		if hitX then
 			self.vx = 0
 		end
+	else -- path clear
+		self.x, self.y = nx, ny
 	end
 end
 
