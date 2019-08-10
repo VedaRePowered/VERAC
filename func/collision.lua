@@ -14,21 +14,25 @@ end
 function collision:getPossibleCollisions(world, dx, dy)
 	local possibleCollisionsReversed = {}
 	local possibleCollisions = {}
-	local step = 1/math.max(math.abs(dx), math.abs(dy))
-	for i = 0, 1, step do
-		local tx, ty = self.x+dx*i, self.y+dy*i
+	local step = math.min(1/math.max(math.abs(dx), math.abs(dy)), 1)
+	for i = 0, 1+step, step do
+		local tx, ty = self.x-self.width/2+dx*i, self.y-self.height/2+dy*i
 		local boxes = {}
 		local code = math.floor(tx) .. ":" .. math.floor(ty)
 		if not possibleCollisionsReversed[code] then
 			possibleCollisionsReversed[code] = true
-			table.insert(possibleCollisions, {x = math.floor(tx), y = math.floor(ty)})
+			if world:getBlock(math.floor(tx), math.floor(ty)).uuid then
+				table.insert(possibleCollisions, {x = math.floor(tx), y = math.floor(ty)})
+			end
 		end
-		for x = tx, math.ceil(tx+self.width) do
-			for y = ty, math.ceil(ty+self.height) do
-				local code = math.ceil(tx) .. ":" .. math.ceil(ty)
+		for ix = math.floor(tx), math.ceil(tx+self.width) do
+			for iy = math.floor(ty), math.ceil(ty+self.height) do
+				local code = math.ceil(ix) .. ":" .. math.ceil(iy)
 				if not possibleCollisionsReversed[code] then
 					possibleCollisionsReversed[code] = true
-					table.insert(possibleCollisions, {x = math.ceil(tx), y = math.ceil(ty)})
+					if world:getBlock(math.ceil(tx), math.ceil(ty)).uuid then
+						table.insert(possibleCollisions, {x = math.ceil(ix), y = math.ceil(iy)})
+					end
 				end
 			end
 		end
@@ -52,11 +56,11 @@ function collision:singleFaceCollide(px1, py1, px2, py2, lx1, lx2, ly) -- x and 
 	local pxl = self.width
 	-- collide line moving from (px1, py1 to px1+pxl, py1) to (px2, py2 to px2+pxl, py2) with line (lx1, ly, lx2, ly)
 	local nLy = (ly-py1)/(py2-py1) -- new line y (interpl for intersecting y)
-	if nLy <= 0 or nLy >= 1 then
+	if nLy < 0 or nLy > 1 then
 		return false
 	end
 	local lPx = px1*(1-nLy) + px2*nLy -- new px (px for intersecting y)
-	if lx2 <= lPx or lx1 >= lPx + pxl then -- collide
+	if lx2 < lPx or lx1 > lPx + pxl then -- collide
 		return false
 	end
 	return nLy -- how far until hit

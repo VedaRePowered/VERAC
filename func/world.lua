@@ -35,6 +35,11 @@ function world:setBlock(x, y, tile)
 	end
 end
 
+function world:getBlock(x, y)
+	self:newRow(y)
+	return self.tiles[y][x] or {uuid=false, intersecting={}}
+end
+
 function world:draw(tileset, cam) -- draw a region based around the camera's telemetry
 	local width, height = love.window.getMode()
 	local xMax, yMax = math.ceil(width/cam.scale/2), math.ceil(height/cam.scale/2)

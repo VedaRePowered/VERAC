@@ -42,5 +42,5 @@ end
 
 function love.draw()
 	s.world:draw(s.tileset, s.camera)
-	s.mainPlayer:draw(s.camera)
+	s.mainPlayer:draw(s.world, s.camera)
 end
