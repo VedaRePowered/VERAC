@@ -14,23 +14,16 @@ end
 function collision:getPossibleCollisions(world, dx, dy)
 	local possibleCollisionsReversed = {}
 	local possibleCollisions = {}
-	local step = math.min(1/math.max(math.abs(dx), math.abs(dy)), 1)
+	local step = math.min(1/math.max(math.abs(dx), math.abs(dy), 0.001), 1)
 	for i = 0, 1+step, step do
 		local tx, ty = self.x-self.width/2+dx*i, self.y-self.height/2+dy*i
 		local boxes = {}
-		local code = math.floor(tx) .. ":" .. math.floor(ty)
-		if not possibleCollisionsReversed[code] then
-			possibleCollisionsReversed[code] = true
-			if world:getBlock(math.floor(tx), math.floor(ty)).uuid then
-				table.insert(possibleCollisions, {x = math.floor(tx), y = math.floor(ty)})
-			end
-		end
 		for ix = math.floor(tx), math.ceil(tx+self.width) do
 			for iy = math.floor(ty), math.ceil(ty+self.height) do
 				local code = math.ceil(ix) .. ":" .. math.ceil(iy)
 				if not possibleCollisionsReversed[code] then
 					possibleCollisionsReversed[code] = true
-					if world:getBlock(math.ceil(tx), math.ceil(ty)).uuid then
+					if world:getBlock(math.ceil(ix), math.ceil(iy)).uuid then
 						table.insert(possibleCollisions, {x = math.ceil(ix), y = math.ceil(iy)})
 					end
 				end
@@ -60,7 +53,7 @@ function collision:singleFaceCollide(px1, py1, px2, py2, lx1, lx2, ly) -- x and 
 		return false
 	end
 	local lPx = px1*(1-nLy) + px2*nLy -- new px (px for intersecting y)
-	if lx2 < lPx or lx1 > lPx + pxl then -- collide
+	if lx2 <= lPx or lx1 >= lPx + pxl then -- collide
 		return false
 	end
 	return nLy -- how far until hit
@@ -68,7 +61,7 @@ end
 
 function collision:onePass(world, delta)
 	local gx, gy = self.x+self.vx*delta, self.y+self.vy*delta -- goal
-	local nx, ny = self.x+self.vx*delta, self.y+self.vy*delta -- new
+	local nx, ny = gx, gy -- output position
 	local hitY, hitX = false, false
 	local hEdge, vEdge = self.width/2, self.height/2
 
@@ -77,15 +70,15 @@ function collision:onePass(world, delta)
 	for _, pos in pairs(blocks) do
 		local b = {x=pos.x, y=pos.y, width=1, height=1} -- magic to make box out of world tile (TODO: extended blocks)
 		if self.vy*delta > 0 then
-			local colliding = self:singleFaceCollide(self.x-vEdge, self.y+vEdge, gx-vEdge, gy+vEdge, b.x, b.x+b.width, b.y)
+			local colliding = self:singleFaceCollide(self.x-hEdge, self.y+vEdge, gx-hEdge, gy+vEdge, b.x, b.x+b.width, b.y-b.height)
 			if colliding then
-				ny = b.y-vEdge
+				ny = b.y-b.height-vEdge
 				hitY = colliding
 			end
 		elseif self.vy*delta < 0 then
-			local colliding = self:singleFaceCollide(self.x-vEdge, self.y-vEdge, gx-vEdge, gy-vEdge, b.x, b.x+b.width, b.y+b.height)
+			local colliding = self:singleFaceCollide(self.x-hEdge, self.y-vEdge, gx-hEdge, gy-vEdge, b.x, b.x+b.width, b.y)
 			if colliding then
-				ny = b.y+b.height+vEdge
+				ny = b.y+vEdge
 				hitY = colliding
 			end
 		end
@@ -94,16 +87,16 @@ function collision:onePass(world, delta)
 	for _, pos in pairs(blocks) do
 		local b = {x=pos.x, y=pos.y, width=1, height=1} -- magic to make box out of world tile (TODO: extended blocks)
 		if self.vx*delta > 0 then
-			local colliding = self:singleFaceCollide(self.y-hEdge, self.x+hEdge, gy-hEdge, gx+hEdge, b.y, b.y+b.height, b.x)
+			local colliding = self:singleFaceCollide(self.y-vEdge, self.x+hEdge, gy-vEdge, gx+hEdge, b.y, b.y+b.height, b.x)
 			if colliding then
 				nx = b.x-hEdge
-				hitY = colliding
+				hitX = colliding
 			end
 		elseif self.vx*delta < 0 then
-			local colliding = self:singleFaceCollide(self.y-hEdge, self.x-hEdge, gy-hEdge, gx-hEdge, b.y, b.y+b.height, b.x+b.width)
+			local colliding = self:singleFaceCollide(self.y-vEdge, self.x-hEdge, gy-vEdge, gx-hEdge, b.y, b.y+b.height, b.x+b.width)
 			if colliding then
 				nx = b.x+b.width+hEdge
-				hitY = colliding
+				hitX = colliding
 			end
 		end
 	end
@@ -126,8 +119,8 @@ function collision:slide(world, delta)
 		self.x = nx
 		local _, hitY, _, ny = self:onePass(world, delta)
 		self.y = ny
-		if hitX then
-			self.vx = 0
+		if hitY then
+			self.vy = 0
 		end
 	else -- path clear
 		self.x, self.y = nx, ny
