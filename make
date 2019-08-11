@@ -9,7 +9,7 @@ if [ "$1" = help ]; then
 	Love2D genaric build script by BEN1JEN.
 	usage: ./make [mode] [zip]
 	[mode]:
-		none					- Everything
+		none/default				- Everything
 		clean					- Remove all build files
 		all					- Redownload and build everything
 		love					- Just .love
@@ -58,7 +58,7 @@ if [ "$1" = love ]; then
 fi
 
 # make .exe file
-if [ $# -lt 1 -o "$1" = win64 -o "$1" = all ]; then
+if [ $# -lt 1 -o "$1" = default -o "$1" = win64 -o "$1" = all ]; then
 	if [ ! -d love_extracted_win64 ]; then
 		wget https://bitbucket.org/rude/love/downloads/love-11.2-win64.zip
 		mkdir love_extracted_win64
@@ -96,7 +96,7 @@ if [ $# -lt 1 -o "$1" = win64 -o "$1" = all ]; then
 fi
 
 # make MacOS .app
-if [ $# -lt 1 -o "$1" = macos -o "$1" = all ]; then
+if [ $# -lt 1 -o "$1" = default -o "$1" = macos -o "$1" = all ]; then
 	if [ ! -d love_extracted_macos ]; then
 		mkdir love_extracted_macos
 		wget https://bitbucket.org/rude/love/downloads/love-11.2-macos.zip
@@ -126,7 +126,7 @@ if [ $# -lt 1 -o "$1" = macos -o "$1" = all ]; then
 fi
 
 # make linux executable that MIGHT work on other computers
-if [ $# -lt 1 -o "$1" = linux -o "$1" = all ]; then
+if [ $# -lt 1 -o "$1" = default -o "$1" = linux -o "$1" = all ]; then
 	cat /usr/bin/love $GAME_NAME.love > $GAME_NAME.x86_64
 	chmod a+x $GAME_NAME.x86_64
 
@@ -157,7 +157,7 @@ Terminal=false
 Type=Application
 Categories=Game;X-Love;
 StartupNotify=true
-Keywords=game;love;$GAME_NAME;" > tmp/$GAME_NAME.desktop
+Keywords=game;love;BEN1JEN;Saweron;vertical;race;racing;platform;platformer;platforming;$GAME_NAME;" > tmp/$GAME_NAME.desktop
 	if [ ! -f AppRun ]; then
 		wget -c https://github.com/AppImage/AppImageKit/releases/download/continuous/AppRun-x86_64 -O AppRun
 		chmod a+x AppRun
