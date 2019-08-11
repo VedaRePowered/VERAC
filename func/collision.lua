@@ -34,11 +34,13 @@ function collision:getPossibleCollisions(world, dx, dy)
 end
 
 function collision:singleFaceCollide(px1, py1, px2, py2, lx1, lx2, ly) -- x and y could be swapped and it would still work
+	local swapped = false
 	-- sort
 	if py1 > py2 then
 		local ty, tx = py1, px1
 		py1, px1 = py2, px2
 		py2, px2 = ty, tx
+		swapped = true
 	end
 	if lx1 > lx2 then
 		local tx = lx1
@@ -56,7 +58,7 @@ function collision:singleFaceCollide(px1, py1, px2, py2, lx1, lx2, ly) -- x and 
 	if lx2 <= lPx or lx1 >= lPx + pxl then -- collide
 		return false
 	end
-	return nLy -- how far until hit
+	return swapped and (1-nLy) or nLy -- how far until hit
 end
 
 function collision:onePass(world, delta)
@@ -71,13 +73,13 @@ function collision:onePass(world, delta)
 		local b = {x=pos.x, y=pos.y, width=1, height=1} -- magic to make box out of world tile (TODO: extended blocks)
 		if self.vy*delta > 0 then
 			local colliding = self:singleFaceCollide(self.x-hEdge, self.y+vEdge, gx-hEdge, gy+vEdge, b.x, b.x+b.width, b.y-b.height)
-			if colliding then
+			if colliding and (not hitY or colliding < hitY) then
 				ny = b.y-b.height-vEdge
 				hitY = colliding
 			end
 		elseif self.vy*delta < 0 then
 			local colliding = self:singleFaceCollide(self.x-hEdge, self.y-vEdge, gx-hEdge, gy-vEdge, b.x, b.x+b.width, b.y)
-			if colliding then
+			if colliding and (not hitY or colliding < hitY) then
 				ny = b.y+vEdge
 				hitY = colliding
 			end
@@ -88,13 +90,13 @@ function collision:onePass(world, delta)
 		local b = {x=pos.x, y=pos.y, width=1, height=1} -- magic to make box out of world tile (TODO: extended blocks)
 		if self.vx*delta > 0 then
 			local colliding = self:singleFaceCollide(self.y-vEdge, self.x+hEdge, gy-vEdge, gx+hEdge, b.y, b.y-b.height, b.x)
-			if colliding then
+			if colliding and (not hitX or colliding < hitX) then
 				nx = b.x-hEdge
 				hitX = colliding
 			end
 		elseif self.vx*delta < 0 then
 			local colliding = self:singleFaceCollide(self.y-vEdge, self.x-hEdge, gy-vEdge, gx-hEdge, b.y, b.y-b.height, b.x+b.width)
-			if colliding then
+			if colliding and (not hitX or colliding < hitX) then
 				nx = b.x+b.width+hEdge
 				hitX = colliding
 			end
@@ -106,7 +108,34 @@ end
 
 function collision:slide(world, delta)
 	local hitX, hitY, nx, ny = self:onePass(world, delta)
-	if hitY and (not hitX or hitY <= hitX) then
+	if hitX and hitY then
+		local ox, oy, ovx, ovy = self.x, self.y, self.vx, self.vy
+		do
+			self.vy = 0
+			self.y = ny
+			hitX, _, nx, _ = self:onePass(world, delta)
+		end
+		self.x, self.y, self.vx, self.vy = ox, oy, ovx, ovy
+		do
+			self.vx = 0
+			self.x = nx
+			_, hitY, _, ny = self:onePass(world, delta)
+		end
+		self.x, self.y, self.vx, self.vy = ox, oy, ovx, ovy
+		if not hitY or (hitX and hitY > hitX) then
+			self.y = ny
+			self.x = nx
+			if hitX then
+				self.vx = 0
+			end
+		else
+			self.x = nx
+			self.y = ny
+			if hitY then
+				self.vy = 0
+			end
+		end
+	elseif hitY and (not hitX or hitY < hitX) then
 		self.vy = 0
 		self.y = ny
 		local hitX, _, nx, _ = self:onePass(world, delta)
