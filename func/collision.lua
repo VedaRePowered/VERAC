@@ -87,13 +87,13 @@ function collision:onePass(world, delta)
 	for _, pos in pairs(blocks) do
 		local b = {x=pos.x, y=pos.y, width=1, height=1} -- magic to make box out of world tile (TODO: extended blocks)
 		if self.vx*delta > 0 then
-			local colliding = self:singleFaceCollide(self.y-vEdge, self.x+hEdge, gy-vEdge, gx+hEdge, b.y, b.y+b.height, b.x)
+			local colliding = self:singleFaceCollide(self.y-vEdge, self.x+hEdge, gy-vEdge, gx+hEdge, b.y, b.y-b.height, b.x)
 			if colliding then
 				nx = b.x-hEdge
 				hitX = colliding
 			end
 		elseif self.vx*delta < 0 then
-			local colliding = self:singleFaceCollide(self.y-vEdge, self.x-hEdge, gy-vEdge, gx-hEdge, b.y, b.y+b.height, b.x+b.width)
+			local colliding = self:singleFaceCollide(self.y-vEdge, self.x-hEdge, gy-vEdge, gx-hEdge, b.y, b.y-b.height, b.x+b.width)
 			if colliding then
 				nx = b.x+b.width+hEdge
 				hitX = colliding

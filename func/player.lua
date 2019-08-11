@@ -21,8 +21,8 @@ function player:updateLocal(world, cam, delta, k) -- update as if main player
 	if k.playerRight.held then
 		self.collider.vx = self.collider.vx + 20*delta
 	end
-	if k.playerJump.held then
-		self.collider.vy = 20
+	if k.playerJump.down then
+		self.collider.vy = 5
 	end
 	self.collider:slide(world, delta)
 
