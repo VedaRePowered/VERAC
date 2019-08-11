@@ -4,23 +4,36 @@ function buttons.new(id, mapping)
 	return setmetatable({
 		gamepad=love.joystick.getJoysticks()[id],
 		mapping=require "assets.defaultButtonMap",
-		pressed={}
+		pressed={},
+		id = id
 	}, {__index=buttons})
 end
 
 function buttons:get()
-	assert(self.gamepad and self.gamepad:isConnected(), "Gamepad not connected, can't get buttons")
+	assert(self.id == 1 or self.id == 0 or (self.gamepad and self.gamepad:isConnected()), "Gamepad not connected, can't get buttons")
 	local k = {}
 	for b, l in pairs(self.mapping) do
 		k[b] = {}
 		k[b].held = false
 		for _, p in ipairs(l) do
-			if p.type == "button" then
-				k[b].held = k[b].held or self.gamepad:isDown(p.button)
-			elseif p.type == "hat" then
-				k[b].held = k[b].held or tostring(self.gamepad:getHat(p.hat)):match(p.direction)
-			elseif p.type == "axis" then
-				k[b].held = k[b].held or self.gamepad:getAxis(p.axis)/p.direction >= 1
+			if self.id >= 1 and self.gamepad then
+				if p.type == "button" then
+					k[b].held = k[b].held or self.gamepad:isDown(p.button)
+				elseif p.type == "hat" then
+					k[b].held = k[b].held or tostring(self.gamepad:getHat(p.hat)):match(p.direction)
+				elseif p.type == "axis" then
+					k[b].held = k[b].held or self.gamepad:getAxis(p.axis)/p.direction >= 1
+				end
+			end
+			if self.id <= 1 then
+				if p.type == "key" then
+					if p.scancode then
+						k[b].held = k[b].held or love.keyboard.isScancodeDown(p.scancode)
+					end
+					if p.keycode then
+						k[b].held = k[b].held or love.keyboard.isDown(p.keycode)
+					end
+				end
 			end
 		end
 		k[b].held = not not k[b].held --> bool
