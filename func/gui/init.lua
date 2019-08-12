@@ -12,25 +12,24 @@ function gui.new()
 end
 
 function gui:add(e)
-	table.insert(guiElements)
-end
-
-function gui:get(id)
-	return guiElements[id]
+	table.insert(self.guiElements, e)
 end
 
 function gui:delete(id)
-	guiElements[id] = nil
+	self.guiElements[id] = nil
 end
 
-function gui:update(k)
-	for _, e in pairs(guiElements) do
-		e.update(k)
+function gui:update(delta, k)
+	gui.text.updateBlink(delta)
+	gui.slider.updateMouse(delta)
+	for _, e in pairs(self.guiElements) do
+		e:update(k)
 	end
+	gui.slider.updateKeys(delta)
 end
 
 function gui:draw()
-	for _, e in pairs(guiElements) do
+	for _, e in pairs(self.guiElements) do
 		e:draw()
 	end
 end

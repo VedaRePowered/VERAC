@@ -31,7 +31,7 @@ function button:update(k)
 	local mouseX, mouseY = love.mouse.getPosition()
 	local newHovered = mouseX >= self.x and mouseY >= self.y and mouseX <= self.x + self.w and mouseY <= self.y + self.h
 	if newHovered then
-		f.playfield.guiUseMouse()
+		-- f.playfield.guiUseMouse() -- could be useful in the future
 	end
 
 	local newHeld = self.hovered and newHovered and k.action.down or newHovered and self.held and k.action.held

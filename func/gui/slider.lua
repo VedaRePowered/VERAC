@@ -10,7 +10,7 @@ slider.leftCooldown2 = 0
 slider.rightCooldown2 = 0
 slider.wheelDelta = 0
 
-function slider.new(x, y, size, thickness, direction, c1, c2, c3, c4)
+function slider.new(x, y, size, thickness, direction, setCallback, c1, c2, c3, c4)
 	if not c1 then
 		c1 = {1.0, 1.0, 1.0, 1.0}
 	end
@@ -24,8 +24,8 @@ function slider.new(x, y, size, thickness, direction, c1, c2, c3, c4)
 		c4 = {c3[1] * 0.6, c3[2] * 0.6, c3[3] * 0.6, c3[4]}
 	end
 	return setmetatable({
-		x = x - width/2,
-		y = y - height/2,
+		x = x - size/2,
+		y = y - thickness/2,
 		width = size,
 		height = thickness,
 		c1 = c1,
@@ -35,11 +35,12 @@ function slider.new(x, y, size, thickness, direction, c1, c2, c3, c4)
 		val = 0,
 		grabbed = false,
 		mouseOffset = 0,
-		lastWheel = 0
+		lastWheel = 0,
+		callback=setCallback
 	}, {__index=slider})
 end
 
-function slider.updateMouseKeys(delta)
+function slider.updateMouse(delta)
 	slider.leftCooldown1 = slider.leftCooldown1 - delta
 	slider.rightCooldown1 = slider.rightCooldown1 - delta
 	slider.leftCooldown2 = slider.leftCooldown2 - delta
@@ -51,7 +52,9 @@ function slider.updateMouseKeys(delta)
 	else
 		slider.clickedLast = false
 	end
+end
 
+function slider.updateKeys(delta)
 	if left and not slider.leftLast then
 		slider.leftCooldown1 = 0.5
 	end
@@ -91,7 +94,9 @@ function slider.updateMouseKeys(delta)
 end
 
 function slider:update(k)
-	self.val = math.max(math.min(s.val + (slider.wheelDelta - self.lastWheel), 1), 0)
+	local oldVal = self.val
+
+	self.val = math.max(math.min(self.val + (slider.wheelDelta - self.lastWheel), 1), 0)
 	self.lastWheel = slider.wheelDelta
 
 	local mouseX, mouseY = love.mouse.getPosition()
@@ -106,7 +111,7 @@ function slider:update(k)
 			self.val = math.max(math.min((mouseX - self.x) / self.width + self.mouseOffset, 1), 0)
 		end
 	else
-		s.grabbed = false
+		self.grabbed = false
 	end
 
 	if mouseX >= self.x - 10 and mouseY >= self.y - 10 and mouseX <= self.x + self.width + 10 and mouseY <= self.y + self.height + 10 then
@@ -124,6 +129,10 @@ function slider:update(k)
 				self.mouseOffset = self.mouseOffset + 0.05
 			end
 		end
+	end
+
+	if self.callback and self.val ~= oldVal then
+		self.callback(self.val)
 	end
 end
 

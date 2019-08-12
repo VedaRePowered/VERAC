@@ -24,7 +24,7 @@ function selector:update(k)
 	local mouseX, mouseY = love.mouse.getPosition()
 	local newHovered = mouseX >= self.x and mouseY >= self.y and mouseX <= self.x + self.w and mouseY <= self.y + self.h
 	if newHovered then
-		f.playfield.guiUseMouse()
+		-- f.playfield.guiUseMouse() -- could be useful in the future
 	end
 
 	if newHovered then

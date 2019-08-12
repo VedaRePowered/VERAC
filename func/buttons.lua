@@ -33,6 +33,8 @@ function buttons:get()
 					if p.keycode then
 						k[b].held = k[b].held or love.keyboard.isDown(p.keycode)
 					end
+				elseif p.type == "mouse" then
+					k[b].held = k[b].held or love.mouse.isDown(p.button)
 				end
 			end
 		end
