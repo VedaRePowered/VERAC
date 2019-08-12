@@ -43,6 +43,22 @@ function menu:button(displayMode, y, buttonMode, ...)
 end
 
 function menu:update(delta, k)
+	local width, height = love.window.getMode()
+	if self.targetWidth ~= width then
+		local convert = width/self.targetWidth
+		for _, e in pairs(self.gui.guiElements) do
+			if e.x and e.y then
+				e.x, e.y = e.x * convert, e.y * convert
+			end
+			if e.w and e.h then
+				e.w, e.h = e.w * convert, e.h * convert
+			end
+			if e.width and e.height then
+				e.width, e.height = e.width * convert, e.height * convert
+			end
+		end
+		self.targetWidth = width
+	end
 	self.gui:update(delta, k)
 end
 
