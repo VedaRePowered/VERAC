@@ -1,9 +1,11 @@
 local world = {}
+local tileset = require "func.tileset"
 
 function world.new(width)
 	return setmetatable({
 		width = width,
-		tiles = {}
+		tiles = {},
+		tileset = tileset.new()
 	}, {__index=world})
 end
 
@@ -40,7 +42,7 @@ function world:getBlock(x, y)
 	return self.tiles[y][x] or {uuid=false, intersecting={}}
 end
 
-function world:draw(tileset, cam) -- draw a region based around the camera's telemetry
+function world:draw(cam) -- draw a region based around the camera's telemetry
 	local width, height = love.window.getMode()
 	local xMax, yMax = math.ceil(width/cam.scale/2), math.ceil(height/cam.scale/2)
 	local xPos, yPos = math.floor(cam.x), math.floor(cam.y)
@@ -49,7 +51,7 @@ function world:draw(tileset, cam) -- draw a region based around the camera's tel
 		if self.tiles[y][x].uuid and not drawn[x+y*self.width] then
 			drawn[x+y*self.width] = true
 			local sx, sy = cam:toScreenPosition(x, y)
-			tileset:draw(self.tiles[y][x].uuid, cam.scale, sx, sy)
+			self.tileset:draw(self.tiles[y][x].uuid, cam.scale, sx, sy)
 		end
 	end
 	for y = yPos-yMax+1, yPos+yMax+1 do

@@ -19,5 +19,12 @@ return {
 		center = {x=5, y=2},
 		collisionOnBlock = false,
 		collisionOnExtra = false
+	},
+	{
+		uuid = "64b72878-c4be-4e9c-8ba8-37e3654de003",
+		texture = "/big.png",
+		center = {x=1, y=1},
+		collisionOnBlock = true,
+		collisionOnExtra = true
 	}
 }

@@ -15,18 +15,31 @@ function collision:getPossibleCollisions(world, dx, dy)
 	local possibleCollisionsReversed = {}
 	local possibleCollisions = {}
 	local step = math.min(1/math.max(math.abs(dx), math.abs(dy), 0.001), 1)
+	local function addOne(ix, iy)
+		local code = math.ceil(ix) .. ":" .. math.ceil(iy)
+		if not possibleCollisionsReversed[code] then
+			possibleCollisionsReversed[code] = true
+			local block = world:getBlock(math.ceil(ix), math.ceil(iy))
+			local tid = block.uuid
+			if tid then
+				local t = world.tileset.uuids[tid]
+				if t.decoCollide then
+					table.insert(possibleCollisions, {x = math.ceil(ix)+t.offset.x, y = math.ceil(iy)-t.offset.y, width=t.width+1, height=t.height+1})
+				elseif t.collide then
+					table.insert(possibleCollisions, {x = math.ceil(ix), y = math.ceil(iy), width=1, height=1})
+				end
+			end
+			for _, i in ipairs(block.intersecting) do
+				addOne(i.x, i.y)
+			end
+		end
+	end
 	for i = 0, 1+step, step do
 		local tx, ty = self.x-self.width/2+dx*i, self.y-self.height/2+dy*i
 		local boxes = {}
 		for ix = math.floor(tx), math.ceil(tx+self.width) do
 			for iy = math.floor(ty), math.ceil(ty+self.height) do
-				local code = math.ceil(ix) .. ":" .. math.ceil(iy)
-				if not possibleCollisionsReversed[code] then
-					possibleCollisionsReversed[code] = true
-					if world:getBlock(math.ceil(ix), math.ceil(iy)).uuid then
-						table.insert(possibleCollisions, {x = math.ceil(ix), y = math.ceil(iy)})
-					end
-				end
+				addOne(ix, iy)
 			end
 		end
 	end
@@ -69,8 +82,7 @@ function collision:onePass(world, delta)
 
 	local blocks = self:getPossibleCollisions(world, self.vx*delta, self.vy*delta)
 	-- vertical collision
-	for _, pos in pairs(blocks) do
-		local b = {x=pos.x, y=pos.y, width=1, height=1} -- magic to make box out of world tile (TODO: extended blocks)
+	for _, b in pairs(blocks) do
 		if self.vy*delta > 0 then
 			local colliding = self:singleFaceCollide(self.x-hEdge, self.y+vEdge, gx-hEdge, gy+vEdge, b.x, b.x+b.width, b.y-b.height)
 			if colliding and (not hitY or colliding < hitY) then
@@ -86,8 +98,7 @@ function collision:onePass(world, delta)
 		end
 	end
 	-- horizontal collision
-	for _, pos in pairs(blocks) do
-		local b = {x=pos.x, y=pos.y, width=1, height=1} -- magic to make box out of world tile (TODO: extended blocks)
+	for _, b in pairs(blocks) do
 		if self.vx*delta > 0 then
 			local colliding = self:singleFaceCollide(self.y-vEdge, self.x+hEdge, gy-vEdge, gx+hEdge, b.y, b.y-b.height, b.x)
 			if colliding and (not hitX or colliding < hitX) then
