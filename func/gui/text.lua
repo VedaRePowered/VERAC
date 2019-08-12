@@ -59,7 +59,7 @@ function text:draw()
 	love.graphics.setLineWidth(2)
 	local font = love.graphics.getFont()
 
-	local cutoff = string.sub(self.text, 1, self.cursorPosition) .. (selectedTextBox == id and (cursorBlink > 0.1 and "." or " ") or "") .. string.sub(self.text, self.cursorPosition+1, -1)
+	local cutoff = string.sub(self.text, 1, self.cursorPosition) .. (selectedTextBox == self.id and (cursorBlink > 0.1 and "." or " ") or "") .. string.sub(self.text, self.cursorPosition+1, -1)
 	if font:getWidth(cutoff) >= self.w then
 		for c = #self.text, 1, -1 do
 			cutoff = string.sub(self.text, 1, c) .. "..."

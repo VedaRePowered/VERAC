@@ -51,7 +51,21 @@ function player:updateLocal(world, cam, delta, k) -- update as if main player
 	self.onRightWall = self.collider.vx == 0 and ovx < 0
 	self.onLeftWall = self.collider.vx == 0 and ovx > 0
 
-	cam:glideTo(self.collider.x, self.collider.y, 10^delta)
+	local camOffsetX = 0
+	local camOffsetY = 0
+	if k.cameraLookUp.held then
+		camOffsetY = camOffsetY + 4
+	end
+	if k.cameraLookDown.held then
+		camOffsetY = camOffsetY - 4
+	end
+	if k.cameraLookRight.held then
+		camOffsetX = camOffsetX + 4
+	end
+	if k.cameraLookLeft.held then
+		camOffsetX = camOffsetX - 4
+	end
+	cam:glideTo(self.collider.x+camOffsetX, self.collider.y+camOffsetY, 0.1)
 end
 
 function player:draw(world, cam)

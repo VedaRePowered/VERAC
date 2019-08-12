@@ -20,6 +20,7 @@ function gui:delete(id)
 end
 
 function gui:update(delta, k)
+	gui.text.updateBlink(delta)
 	for _, e in pairs(self.guiElements) do
 		e:update(k)
 	end

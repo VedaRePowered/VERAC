@@ -10,28 +10,16 @@ slider.leftCooldown2 = 0
 slider.rightCooldown2 = 0
 slider.wheelDelta = 0
 
-function slider.new(x, y, size, thickness, direction, setCallback, c1, c2, c3, c4)
-	if not c1 then
-		c1 = {1.0, 1.0, 1.0, 1.0}
-	end
-	if not c2 then
-		c2 = {c1[1] * 0.8, c1[2] * 0.8, c1[3] * 0.8, c1[4]}
-	end
-	if not c3 then
-		c3 = c2
-	end
-	if not c4 then
-		c4 = {c3[1] * 0.6, c3[2] * 0.6, c3[3] * 0.6, c3[4]}
-	end
+function slider.new(x, y, size, thickness, direction, setCallback)
 	return setmetatable({
 		x = x - size/2,
 		y = y - thickness/2,
 		width = size,
 		height = thickness,
-		c1 = c1,
-		c2 = c2,
-		c3 = c3,
-		c4 = c4,
+		c1 = {1.0, 1.0, 1.0},
+		c2 = {0.8, 0.8, 0.8, 0.6},
+		c3 = {0.8, 0.8, 0.8},
+		c4 = {0.4, 0.4, 0.4},
 		val = 0,
 		grabbed = false,
 		mouseOffset = 0,
@@ -128,7 +116,7 @@ function slider:update(k)
 	end
 
 	if self.callback and self.val ~= oldVal then
-		self.callback(self.val)
+		self:callback(self.val)
 	end
 end
 
