@@ -20,12 +20,10 @@ function gui:delete(id)
 end
 
 function gui:update(delta, k)
-	gui.text.updateBlink(delta)
-	gui.slider.updateMouse(delta)
 	for _, e in pairs(self.guiElements) do
 		e:update(k)
 	end
-	gui.slider.updateKeys(delta)
+	gui.slider.updateMouseKeys(delta, k)
 end
 
 function gui:draw()

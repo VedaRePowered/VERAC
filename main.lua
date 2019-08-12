@@ -23,7 +23,7 @@ function love.load()
 	s.testGui = f.gui.new()
 	s.testGui:add(f.gui.button.new(300, 300, 50, 20, "Test.BTN"))
 	s.testGui:add(f.gui.text.new(300, 200, 200, "Enter %TEST% Here."))
-	s.testGui:add(f.gui.selector.new(100, 100, {"One", "2", "0b0011", "IV"}))
+	s.testGui:add(f.gui.selector.new(100, 100, {"One", "2", "0b0011", "IV", "0x32/0xA0"}))
 	s.testGui:add(f.gui.slider.new(300, 100, 100, 20, false))
 end
 

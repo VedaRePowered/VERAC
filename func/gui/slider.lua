@@ -40,33 +40,29 @@ function slider.new(x, y, size, thickness, direction, setCallback, c1, c2, c3, c
 	}, {__index=slider})
 end
 
-function slider.updateMouse(delta)
+function slider.updateMouseKeys(delta, k)
 	slider.leftCooldown1 = slider.leftCooldown1 - delta
 	slider.rightCooldown1 = slider.rightCooldown1 - delta
 	slider.leftCooldown2 = slider.leftCooldown2 - delta
 	slider.rightCooldown2 = slider.rightCooldown2 - delta
-	local left = love.keyboard.isDown("left")
-	local right = love.keyboard.isDown("right")
 	if love.mouse.isDown(1, 2, 3) then
 		slider.clickedLast = true
 	else
 		slider.clickedLast = false
 	end
-end
 
-function slider.updateKeys(delta)
-	if left and not slider.leftLast then
+	if k.sliderLeft.held and not slider.leftLast then
 		slider.leftCooldown1 = 0.5
 	end
-	if right and not slider.rightLast then
+	if k.sliderRight.held and not slider.rightLast then
 		slider.rightCooldown1 = 0.5
 	end
-	slider.leftLast = left
-	slider.rightLast = right
-	if not left then
+	slider.leftLast = k.sliderLeft.held
+	slider.rightLast = k.sliderRight.held
+	if not k.sliderLeft.held then
 		slider.leftCooldown2Active = false
 	end
-	if not right then
+	if not k.sliderRight.held then
 		slider.rightCooldown2Active = false
 	end
 	if slider.leftLast and slider.leftCooldown1 <= 0 then
@@ -100,7 +96,7 @@ function slider:update(k)
 	self.lastWheel = slider.wheelDelta
 
 	local mouseX, mouseY = love.mouse.getPosition()
-	if love.mouse.isDown(1, 2, 3) then
+	if k.action.held then
 		if (not self.grabbed) and mouseX >= self.x+self.val*(self.width-10)-10 and mouseY >= self.y-10 and mouseX <= self.x+self.val*(self.width-10)+10+10 and mouseY <= self.y+self.height+10 then
 			if not slider.clickedLast then
 				self.grabbed = true
@@ -115,14 +111,14 @@ function slider:update(k)
 	end
 
 	if mouseX >= self.x - 10 and mouseY >= self.y - 10 and mouseX <= self.x + self.width + 10 and mouseY <= self.y + self.height + 10 then
-		if left and not slider.leftLast then
+		if k.sliderLeft.held and not slider.leftLast then
 			if not self.grabbed then
 				self.val = math.max(math.min(self.val - 0.05, 1), 0)
 			else
 				self.mouseOffset = self.mouseOffset - 0.05
 			end
 		end
-		if right and not slider.rightLast then
+		if k.sliderRight.held and not slider.rightLast then
 			if not self.grabbed then
 				self.val = math.max(math.min(self.val + 0.05, 1), 0)
 			else
