@@ -19,11 +19,6 @@ function love.load()
 
 	s.world.tileset:loadAssetPack("testTiles")
 	s.terrainGenerator:generateNext(s.world, 100)
-	s.testMenu = f.menu.new()
-	s.testMenu:option("right", 2, "action", "Go!")
-	s.testMenu:option("left", 2, "cycle", {"A", "B", "C", "D"})
-	s.testMenu:option("full", 3, "slider")
-	s.testMenu:option("center", 5, "action", "Done")
 end
 
 function love.update(delta)
