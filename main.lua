@@ -24,13 +24,9 @@ end
 function love.update(delta)
 	local k = s.buttonMap:get()
 	s.mainPlayer:updateLocal(s.world, s.camera, delta, k)
-
-	s.testMenu:update(delta, k)
 end
 
 function love.draw()
 	s.world:draw(s.camera)
 	s.mainPlayer:draw(s.world, s.camera)
-
-	s.testMenu:draw()
 end
