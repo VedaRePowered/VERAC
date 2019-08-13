@@ -9,7 +9,7 @@ function menu.new()
 	}, {__index=menu})
 end
 
-function menu:button(displayMode, y, buttonMode, ...)
+function menu:option(displayMode, y, buttonMode, ...)
 	local w = self.targetWidth
 	local ox = 0
 	local ow = 0
@@ -39,7 +39,12 @@ function menu:button(displayMode, y, buttonMode, ...)
 			self.label = texts[curNum]
 		end
 	end
-	self.gui:add(gui.button.new(ox, y*60+10, ow, 40, text, callback))
+	if buttonMode == "slider" then
+		callback = ...
+		self.gui:add(gui.slider.new(ox, y*60+10, ow, 40, false, callback))
+	else
+		self.gui:add(gui.button.new(ox, y*60+10, ow, 40, text, callback))
+	end
 end
 
 function menu:update(delta, k)

@@ -12,8 +12,8 @@ slider.wheelDelta = 0
 
 function slider.new(x, y, size, thickness, direction, setCallback)
 	return setmetatable({
-		x = x - size/2,
-		y = y - thickness/2,
+		x = x,
+		y = y,
 		width = size,
 		height = thickness,
 		c1 = {1.0, 1.0, 1.0},
@@ -121,7 +121,7 @@ function slider:update(k)
 end
 
 function slider:draw()
-	love.graphics.setLineWidth(5)
+	love.graphics.setLineWidth(3)
 	love.graphics.setColor(self.c1)
 	love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
 	if self.grabbed then
@@ -131,7 +131,7 @@ function slider:draw()
 	end
 	love.graphics.rectangle("fill", self.x+self.val*(self.width-10), self.y, 10, self.height)
 	love.graphics.setColor(self.c2)
-	love.graphics.rectangle("line", self.x-2, self.y-2, self.width+4, self.height+4)
+	love.graphics.rectangle("line", self.x-1, self.y-1, self.width+2, self.height+2)
 	love.graphics.setColor(1, 1, 1)
 end
 
