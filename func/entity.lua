@@ -6,7 +6,7 @@ local xGroundDrag = 0.002
 local yAirDrag = 0.2
 local yWallDrag = 0.0002
 
-function entity.new(x, y, width, height, textures, gravity, animationSpeed)
+function entity.new(x, y, width, height, textures, gravity, animationSpeed, hitCallback)
 	local loadedTextures = {}
 	for _, t in ipairs(textures) do
 		table.insert(loadedTextures, love.graphics.newImage("/assets/entities/" .. tostring(t)))
@@ -20,6 +20,7 @@ function entity.new(x, y, width, height, textures, gravity, animationSpeed)
 		gravity = gravity or 0,
 		onGround = false,
 		onWall = false,
+		hitCallback = hitCallback,
 	}
 	e.collider.x = x
 	e.collider.y = y
@@ -38,6 +39,9 @@ function entity:update(world, delta)
 	self.collider:slide(world, delta)
 	self.onGround =  self.collider.vy == 0 and ovy < 0
 	self.onWall = self.collider.vx == 0 and ovx ~= 0
+	if self.onWall and self.hitCallback then
+		self:hitCallback()
+	end
 end
 
 function entity:draw(world, cam)

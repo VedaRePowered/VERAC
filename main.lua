@@ -21,16 +21,17 @@ function love.load()
 	s.world.tileset:loadAssetPack("testTiles")
 	s.terrainGenerator:generateNext(s.world, 100)
 
-	s.testEntity = f.entity.new(32, 60, 2, 1.5, {"fox.png", "fox2.png", "fox3.png"}, 75, 4)
+	s.testEntity = f.entity.new(32, 60, 2, 1.5, {"fox.png", "fox2.png", "fox3.png"}, 75, 4, function()s.testEntity.direction = not s.testEntity.direction end)
+	s.testEntity.direction = false
 end
 
 function love.update(delta)
 	local k = s.buttonMap:get()
 	s.mainPlayer:updateLocal(s.world, s.camera, delta, k)
-	if math.random(1, 2) == 1 then
-		s.testEntity:accelerate(-2, 0)
+	if s.testEntity.direction then
+		s.testEntity:accelerate(-delta*10, 0)
 	else
-		s.testEntity:accelerate(2, 0)
+		s.testEntity:accelerate(delta*10, 0)
 	end
 	if math.random(1, 50) == 1 then
 		s.testEntity:accelerate(0, 20)
