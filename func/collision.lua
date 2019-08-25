@@ -2,7 +2,7 @@ local collision = {}
 local registeredCollisionObjects = {}
 
 function collision.new(width, height)
-	local co = setmetatable({
+	local co = {
 		x = 0,
 		y = 0,
 		vx = 0,
@@ -10,9 +10,9 @@ function collision.new(width, height)
 		width = width,
 		height = height,
 		registeredId = #registeredCollisionObjects+1,
-	}, {__index=collision})
+	}
 	registeredCollisionObjects[co.registeredId] = co
-	return co
+	return setmetatable(co, {__index=collision})
 end
 
 function collision:getPossibleCollisions(world, dx, dy)
