@@ -9,13 +9,14 @@ local yWallDrag = 0.0002
 function entity.new(x, y, width, height, textures, gravity, animationSpeed)
 	local loadedTextures = {}
 	for _, t in ipairs(textures) do
-		love.graphics.newImage("/assets/entities/" .. tostring(t))
+		table.insert(loadedTextures, love.graphics.newImage("/assets/entities/" .. tostring(t)))
+		loadedTextures[#loadedTextures]:setFilter("nearest", "nearest")
 	end
 	local e = {
 		collider = collision.new(width, height),
 		textures = loadedTextures,
 		animationTimer = 0,
-		animationSpeed = 1/animationSpeed or 1,
+		animationSpeed = animationSpeed or 1,
 		gravity = gravity or 0,
 		onGround = false,
 		onWall = false,
@@ -26,6 +27,8 @@ function entity.new(x, y, width, height, textures, gravity, animationSpeed)
 end
 
 function entity:update(world, delta)
+	self.animationTimer = self.animationTimer%#self.textures + self.animationSpeed*delta
+
 	self.collider.vy = self.collider.vy - self.gravity*delta
 
 	self.collider.vx = self.collider.vx * (self.onGround and xGroundDrag or xAirDrag)^delta
@@ -35,6 +38,17 @@ function entity:update(world, delta)
 	self.collider:slide(world, delta)
 	self.onGround =  self.collider.vy == 0 and ovy < 0
 	self.onWall = self.collider.vx == 0 and ovx ~= 0
+end
+
+function entity:draw(world, cam)
+	local sx, sy = cam:toScreenPosition(self.collider.x-self.collider.width/2, self.collider.y+self.collider.height/2)
+	local ss = cam.scale/8
+	local tex = self.textures[math.max(math.min(math.ceil(self.animationTimer), #self.textures), 1)]
+	love.graphics.draw(tex, sx-tex:getWidth()/2, sy-tex:getHeight()/2, 0, ss)
+end
+
+function entity:accelerate(x, y)
+	self.collider.vx, self.collider.vy = self.collider.vx + x, self.collider.vy + y
 end
 
 return entity
