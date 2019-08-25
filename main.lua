@@ -9,6 +9,8 @@ function love.load()
 	load "player"
 	load "menu"
 
+	load "collision"
+
 	s.camera = f.camera.new()
 	s.world = f.world.new(64)
 	s.terrainGenerator = f.terrainGen.new(math.random(0, 0xFFFFFFFF))
@@ -19,14 +21,35 @@ function love.load()
 
 	s.world.tileset:loadAssetPack("testTiles")
 	s.terrainGenerator:generateNext(s.world, 100)
+
+	s.testCollisionObject = f.collision.new(2, 2)
+	s.testCollisionObject.y = 52
+	s.testCollisionObject.x = 0
+	s.testCollisionObject.vy = 0
+	s.testCollisionObject.vx = 0
 end
 
 function love.update(delta)
 	local k = s.buttonMap:get()
 	s.mainPlayer:updateLocal(s.world, s.camera, delta, k)
+
+	s.testCollisionObject.vx = s.testCollisionObject.vx + delta
+	local xStop, yStop, nx, ny = s.testCollisionObject:onePass(s.world, delta)
+	s.testCollisionObject.x, s.testCollisionObject.y = nx, ny
+	if xStop then
+		s.testCollisionObject.vx = 0
+	end
+	if yStop then
+		s.testCollisionObject.vy = 0
+	end
 end
 
 function love.draw()
 	s.world:draw(s.camera)
 	s.mainPlayer:draw(s.world, s.camera)
+	love.graphics.setColor(1, 1, 0)
+	local sx, sy = s.camera:toScreenPosition(s.testCollisionObject.x-1, s.testCollisionObject.y+1)
+	local ss = s.camera:toScreenSize(2)
+	love.graphics.rectangle("fill", sx, sy, ss, ss)
+	love.graphics.setColor(1, 1, 1)
 end

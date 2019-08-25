@@ -1,14 +1,18 @@
 local collision = {}
+local registeredCollisionObjects = {}
 
 function collision.new(width, height)
-	return setmetatable({
+	local co = setmetatable({
 		x = 0,
 		y = 0,
 		vx = 0,
 		vy = 0,
 		width = width,
 		height = height,
+		registeredId = #registeredCollisionObjects+1,
 	}, {__index=collision})
+	registeredCollisionObjects[co.registeredId] = co
+	return co
 end
 
 function collision:getPossibleCollisions(world, dx, dy)
@@ -41,6 +45,11 @@ function collision:getPossibleCollisions(world, dx, dy)
 			for iy = math.floor(ty), math.ceil(ty+self.height) do
 				addOne(ix, iy)
 			end
+		end
+	end
+	for _, co in pairs(registeredCollisionObjects) do
+		if co.registeredId ~= self.registeredId then
+			table.insert(possibleCollisions, {x = co.x-co.width/2, y = co.y+co.height/2, width=co.width, height=co.height})
 		end
 	end
 	return possibleCollisions
