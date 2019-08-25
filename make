@@ -6,7 +6,7 @@ GAME_NAME="RacingPlatformer"
 
 if [ "$1" = help ]; then
 	echo "Help screen:
-	Love2D genaric build script by BEN1JEN.
+	Love2D generic build script by BEN1JEN.
 	usage: ./make [mode] [zip]
 	[mode]:
 		none/default				- Everything

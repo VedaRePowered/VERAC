@@ -1,6 +1,7 @@
 local f = {} -- f for 'functions'
 local s = {} -- s for 'state'
 function love.load()
+	print("hi")
 	local function load(module) f[tostring(module)] = require("func." .. tostring(module)) end -- helper to load 1 library/class
 	load "camera"
 	load "world"
@@ -20,6 +21,7 @@ function love.load()
 	s.mainPlayer:warpTo(31, 55)
 
 	s.world.tileset:loadAssetPack("testTiles")
+	s.world.tileset:loadAssetPack("tiles/dirt")
 	s.terrainGenerator:generateNext(s.world, 100)
 
 	s.testEntity = f.entity.new(32, 60, 2, 1.5, {"fox.png", "fox2.png", "fox3.png"}, 75, 4, function()s.testEntity.direction=not s.testEntity.direction end)
