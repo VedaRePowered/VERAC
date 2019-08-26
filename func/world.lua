@@ -22,6 +22,7 @@ function world:newRow(y)
 end
 
 function world:setBlock(x, y, tile)
+	assert(tile, "Tile to set in world is nil.")
 	assert(x >= 1 and x <= self.width, "World position out of range.")
 	self:newRow(y)
 	self.tiles[y][x].uuid = tile.uuid
