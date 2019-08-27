@@ -1,14 +1,18 @@
 local collision = {}
+local registeredCollisionObjects = {}
 
 function collision.new(width, height)
-	return setmetatable({
+	local co = {
 		x = 0,
 		y = 0,
 		vx = 0,
 		vy = 0,
 		width = width,
 		height = height,
-	}, {__index=collision})
+		registeredId = #registeredCollisionObjects+1,
+	}
+	registeredCollisionObjects[co.registeredId] = co
+	return setmetatable(co, {__index=collision})
 end
 
 function collision:getPossibleCollisions(world, dx, dy)
@@ -41,6 +45,11 @@ function collision:getPossibleCollisions(world, dx, dy)
 			for iy = math.floor(ty), math.ceil(ty+self.height) do
 				addOne(ix, iy)
 			end
+		end
+	end
+	for _, co in pairs(registeredCollisionObjects) do
+		if co.registeredId ~= self.registeredId then
+			table.insert(possibleCollisions, {x = co.x-co.width/2, y = co.y+co.height/2, width=co.width, height=co.height, dx = co.vx, dy = co.vy}) -- drag velocity
 		end
 	end
 	return possibleCollisions
@@ -76,8 +85,8 @@ end
 
 function collision:onePass(world, delta)
 	local gx, gy = self.x+self.vx*delta, self.y+self.vy*delta -- goal
+	local hitX, hitY = {collision=false, newX=gx}, {collision=false, newY=gy}
 	local nx, ny = gx, gy -- output position
-	local hitY, hitX = false, false
 	local hEdge, vEdge = self.width/2, self.height/2
 
 	local blocks = self:getPossibleCollisions(world, self.vx*delta, self.vy*delta)
@@ -85,15 +94,13 @@ function collision:onePass(world, delta)
 	for _, b in pairs(blocks) do
 		if self.vy*delta > 0 then
 			local colliding = self:singleFaceCollide(self.x-hEdge, self.y+vEdge, gx-hEdge, gy+vEdge, b.x, b.x+b.width, b.y-b.height)
-			if colliding and (not hitY or colliding < hitY) then
-				ny = b.y-b.height-vEdge
-				hitY = colliding
+			if colliding and (not hitY.collision or colliding < hitY.linear) then
+				hitY = {collision=true, collider=b, linear=colliding, newY=b.y-b.height-vEdge}
 			end
 		elseif self.vy*delta < 0 then
 			local colliding = self:singleFaceCollide(self.x-hEdge, self.y-vEdge, gx-hEdge, gy-vEdge, b.x, b.x+b.width, b.y)
-			if colliding and (not hitY or colliding < hitY) then
-				ny = b.y+vEdge
-				hitY = colliding
+			if colliding and (not hitY.collision or colliding < hitY.linear) then
+				hitY = {collision=true, collider=b, linear=colliding, newY=b.y+vEdge}
 			end
 		end
 	end
@@ -101,70 +108,69 @@ function collision:onePass(world, delta)
 	for _, b in pairs(blocks) do
 		if self.vx*delta > 0 then
 			local colliding = self:singleFaceCollide(self.y-vEdge, self.x+hEdge, gy-vEdge, gx+hEdge, b.y, b.y-b.height, b.x)
-			if colliding and (not hitX or colliding < hitX) then
-				nx = b.x-hEdge
-				hitX = colliding
+			if colliding and (not hitX.collision or colliding < hitX.linear) then
+				hitX = {collision=true, collider=b, linear=colliding, newX=b.x-hEdge}
 			end
 		elseif self.vx*delta < 0 then
 			local colliding = self:singleFaceCollide(self.y-vEdge, self.x-hEdge, gy-vEdge, gx-hEdge, b.y, b.y-b.height, b.x+b.width)
-			if colliding and (not hitX or colliding < hitX) then
-				nx = b.x+b.width+hEdge
-				hitX = colliding
+			if colliding and (not hitX.collision or colliding < hitX.linear) then
+				hitX = {collision=true, collider=b, linear=colliding, newX=b.x+b.width+hEdge}
 			end
 		end
 	end
 
-	return hitX, hitY, nx, ny
+	return hitX, hitY
 end
 
 function collision:slide(world, delta)
-	local hitX, hitY, nx, ny = self:onePass(world, delta)
-	if hitX and hitY then
+	local hitX, hitY = self:onePass(world, delta)
+	if hitX.collision and hitY.collision then
 		local ox, oy, ovx, ovy = self.x, self.y, self.vx, self.vy
 		do
 			self.vy = 0
-			self.y = ny
-			hitX, _, nx, _ = self:onePass(world, delta)
+			self.y = hitY.newY
+			hitX, _ = self:onePass(world, delta)
 		end
 		self.x, self.y, self.vx, self.vy = ox, oy, ovx, ovy
 		do
 			self.vx = 0
-			self.x = nx
-			_, hitY, _, ny = self:onePass(world, delta)
+			self.x = hitX.newX
+			_, hitY = self:onePass(world, delta)
 		end
 		self.x, self.y, self.vx, self.vy = ox, oy, ovx, ovy
-		if not hitY or (hitX and hitY > hitX) then
-			self.y = ny
-			self.x = nx
-			if hitX then
+		if not hitY.collision or (hitX.collision and hitY.linear > hitX.linear) then
+			self.y = hitY.newY
+			self.x = hitX.newX
+			if hitX.collision then
 				self.vx = 0
 			end
 		else
-			self.x = nx
-			self.y = ny
-			if hitY then
+			self.x = hitX.newX
+			self.y = hitY.newY
+			if hitY.collision then
 				self.vy = 0
 			end
 		end
-	elseif hitY and (not hitX or hitY < hitX) then
+	elseif hitY.collision and (not hitX.collision or hitY.linear < hitX.linear) then
 		self.vy = 0
-		self.y = ny
-		local hitX, _, nx, _ = self:onePass(world, delta)
-		self.x = nx
-		if hitX then
+		self.y = hitY.newY
+		local hitX, _ = self:onePass(world, delta)
+		self.x = hitX.newX
+		if hitX.collision then
 			self.vx = 0
 		end
-	elseif hitX then
+	elseif hitX.collision then
 		self.vx = 0
-		self.x = nx
-		local _, hitY, _, ny = self:onePass(world, delta)
-		self.y = ny
-		if hitY then
+		self.x = hitX.newX
+		local _, hitY = self:onePass(world, delta)
+		self.y = hitY.newY
+		if hitY.collision then
 			self.vy = 0
 		end
 	else -- path clear
-		self.x, self.y = nx, ny
+		self.x, self.y = hitX.newX, hitY.newY
 	end
+	return hitX.collider, hitY.collider
 end
 
 return collision

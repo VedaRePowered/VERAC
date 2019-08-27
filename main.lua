@@ -8,6 +8,7 @@ function love.load()
 	load "buttons"
 	load "player"
 	load "menu"
+	load "entity"
 
 	s.camera = f.camera.new()
 	s.world = f.world.new(64)
@@ -19,14 +20,27 @@ function love.load()
 
 	s.world.tileset:loadAssetPack("testTiles")
 	s.terrainGenerator:generateNext(s.world, 100)
+
+	s.testEntity = f.entity.new(32, 60, 2, 1.5, {"fox.png", "fox2.png", "fox3.png"}, 75, 4, function()s.testEntity.direction = not s.testEntity.direction end)
+	s.testEntity.direction = false
 end
 
 function love.update(delta)
 	local k = s.buttonMap:get()
 	s.mainPlayer:updateLocal(s.world, s.camera, delta, k)
+	if s.testEntity.direction then
+		s.testEntity:accelerate(-delta*10, 0)
+	else
+		s.testEntity:accelerate(delta*10, 0)
+	end
+	if math.random(1, 50) == 1 then
+		s.testEntity:accelerate(0, 20)
+	end
+	s.testEntity:update(s.world, delta)
 end
 
 function love.draw()
 	s.world:draw(s.camera)
 	s.mainPlayer:draw(s.world, s.camera)
+	s.testEntity:draw(s.world, s.camera)
 end
