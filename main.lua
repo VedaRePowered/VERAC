@@ -40,7 +40,8 @@ function love.update(delta)
 end
 
 function love.draw()
-	s.world:draw(s.camera)
+	s.world:draw(s.camera, "")
 	s.mainPlayer:draw(s.world, s.camera)
 	s.testEntity:draw(s.world, s.camera)
+	s.world:draw(s.camera, "foreground")
 end

@@ -43,13 +43,13 @@ function world:getBlock(x, y)
 	return self.tiles[y][x] or {uuid=false, intersecting={}}
 end
 
-function world:draw(cam) -- draw a region based around the camera's telemetry
+function world:draw(cam, renderRule) -- draw a region based around the camera's telemetry
 	local width, height = love.window.getMode()
 	local xMax, yMax = math.ceil(width/cam.scale/2), math.ceil(height/cam.scale/2)
 	local xPos, yPos = math.floor(cam.x), math.floor(cam.y)
 	local drawn = {}
 	local function drawTile(x, y)
-		if self.tiles[y][x].uuid and not drawn[x+y*self.width] then
+		if self.tiles[y][x].uuid and self.tileset.uuids[self.tiles[y][x].uuid].renderRule == renderRule and not drawn[x+y*self.width] then
 			drawn[x+y*self.width] = true
 			local sx, sy = cam:toScreenPosition(x, y)
 			self.tileset:draw(self.tiles[y][x].uuid, cam.scale, sx, sy)
