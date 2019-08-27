@@ -9,6 +9,7 @@ function love.load()
 	load "player"
 	load "menu"
 	load "entity"
+	load "particles"
 
 	s.camera = f.camera.new()
 	s.world = f.world.new(64)
@@ -23,6 +24,9 @@ function love.load()
 
 	s.testEntity = f.entity.new(32, 60, 2, 1.5, {"fox.png", "fox2.png", "fox3.png"}, 75, 4, function()s.testEntity.direction = not s.testEntity.direction end)
 	s.testEntity.direction = false
+
+	s.testParticles = f.particles.new()
+	s.testParticles:add("dirt")
 end
 
 function love.update(delta)
@@ -37,10 +41,18 @@ function love.update(delta)
 		s.testEntity:accelerate(0, 20)
 	end
 	s.testEntity:update(s.world, delta)
+
+	if math.random() < 0.01 then
+		s.testParticles:instance("dirt", s.mainPlayer.collider.x, s.mainPlayer.collider.y-1)
+	end
+
+	s.testParticles:update(delta)
 end
 
 function love.draw()
-	s.world:draw(s.camera)
+	s.world:draw(s.camera, "")
 	s.mainPlayer:draw(s.world, s.camera)
 	s.testEntity:draw(s.world, s.camera)
+	s.world:draw(s.camera, "foreground")
+	s.testParticles:draw(s.camera)
 end

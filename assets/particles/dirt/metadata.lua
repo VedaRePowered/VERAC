@@ -1,0 +1,21 @@
+return {
+	textures = {
+		"/dirt12x2.png",
+		"/dirt22x2.png",
+		"/dirt12x3.png",
+		"/dirt22x3.png",
+		"/dirt13x3.png",
+		"/dirt23x3.png",
+	},
+	weight = 60,
+	amount = 15,
+	amountRandom = 3,
+	xVelocity = 0,
+	xVelocityRandom = 5,
+	yVelocity = 10,
+	yVelocityRandom = 3,
+	lifeSpan = 2,
+	rotation = "full",
+	rotationVelocity = 0.3,
+	drag = 0.1,
+}
