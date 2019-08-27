@@ -43,13 +43,19 @@ function player:updateLocal(world, cam, delta, k) -- update as if main player
 		self.jumping = false
 	end
 
-	self.collider.vx = self.collider.vx * (self.onGround and xGroundDrag or xAirDrag)^delta
-	self.collider.vy = self.collider.vy * ((self.onLeftWall or self.onRightWall) and yGroundDrag or yAirDrag)^delta
 	local ovx, ovy = self.collider.vx, self.collider.vy
-	self.collider:slide(world, delta)
+	local xCollider, yCollider = self.collider:slide(world, delta) -- store colliders for drag
 	self.onGround =  self.collider.vy == 0 and ovy < 0
 	self.onRightWall = self.collider.vx == 0 and ovx < 0
 	self.onLeftWall = self.collider.vx == 0 and ovx > 0
+
+	local xdm = (self.onGround and xGroundDrag or xAirDrag)^delta
+	local ydm = ((self.onLeftWall or self.onRightWall) and yGroundDrag or yAirDrag)^delta
+	-- adjust the multiplyer for averaging
+	local txv = (yCollider and yCollider.dx or 0)*(1/xdm-1)
+	local tyv = (xCollider and xCollider.dy or 0)*(1/ydm-1)
+	self.collider.vx = (self.collider.vx + txv) * xdm
+	self.collider.vy = (self.collider.vy + tyv) * ydm
 
 	local camOffsetX = 0
 	local camOffsetY = 0
