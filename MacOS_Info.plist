@@ -60,7 +60,7 @@
 	<key>CFBundleIconName</key>
 	<string>OS X AppIcon</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.theheards.${GAME_NAME}</string>
+	<string>org.commandteam.${GAME_NAME}</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -94,7 +94,7 @@
 	<key>NSHighResolutionCapable</key>
 	<true/>
 	<key>NSHumanReadableCopyright</key>
-	<string>© 2006-2018 LÖVE Development Team</string>
+	<string>© 2019 BEN1JEN and Saweron</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 	<key>NSSupportsAutomaticGraphicsSwitching</key>
