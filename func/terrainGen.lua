@@ -11,10 +11,6 @@ local dirtMap = {
 
 }
 
-function replaceTile(x,y,uuid)
-
-end
-
 function terrainGen.new(seed)
 	return setmetatable({
 		seed = seed,
@@ -36,6 +32,10 @@ function terrainGen:generateNext(world, amount)
 			world:newRow(y)
 		end
 	end
+end
+
+function terrainGen.loadIntoWorld(world,tiles)
+	world:clear()
 end
 
 return terrainGen

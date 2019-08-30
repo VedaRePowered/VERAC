@@ -9,6 +9,13 @@ function world.new(width)
 	}, {__index=world})
 end
 
+function world:clear(newWidth)
+	self.tiles = {}
+	if newWidth then
+		self.width = newWidth
+	end
+end
+
 function world:newRow(y)
 	if not self.tiles[y] then
 		self.tiles[y] = {}
