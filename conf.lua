@@ -11,7 +11,7 @@ function love.conf(t)
 
 	-- Window
 	t.window.title = "Racing Platformer"
-	t.window.icon = "assets/icon-temp.png"
+	t.window.icon = "assets/icon.png"
 	t.window.width = 1280
 	t.window.height = 720
 	t.window.borderless = false

@@ -22,7 +22,7 @@ function love.load()
 	s.world.tileset:loadAssetPack("testTiles")
 	s.terrainGenerator:generateNext(s.world, 100)
 
-	s.testEntity = f.entity.new(32, 60, 2, 1.5, {"fox.png", "fox2.png", "fox3.png"}, 75, 4, function()s.testEntity.direction = not s.testEntity.direction end)
+	s.testEntity = f.entity.new(32, 60, 2, 1.5, {"fox.png", "fox2.png", "fox3.png"}, 75, 4, function()s.testEntity.direction=not s.testEntity.direction end)
 	s.testEntity.direction = false
 
 	s.testParticles = f.particles.new()
