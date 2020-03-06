@@ -14,6 +14,7 @@ local pixel = love.graphics.newImage(love.image.newImageData(1, 1))
 function button.new(x, y, width, height, text, clickCallback)
 	return setmetatable({
 		type = "button",
+		origin = origin,
 		x = x,
 		y = y,
 		w = width,
@@ -27,7 +28,7 @@ function button.new(x, y, width, height, text, clickCallback)
 	}, {__index=button})
 end
 
-function button:update(k)
+function button:update(k, gui)
 	local mouseX, mouseY = love.mouse.getPosition()
 	local newHovered = mouseX >= self.x and mouseY >= self.y and mouseX <= self.x + self.w and mouseY <= self.y + self.h
 	if newHovered then
