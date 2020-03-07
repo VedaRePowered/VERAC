@@ -3,7 +3,7 @@ function love.conf(t)
 	t.identity = nil -- no save data needed
 	t.appendidentity = false
 	t.version = "11.0" -- 0.9.0+ adds shaders, so it will work, won't warn on 11.*
-	t.console = false
+	t.console = true
 	t.accelerometerjoystick = false
 	t.externalstorage = false
 	t.gammacorrect = true

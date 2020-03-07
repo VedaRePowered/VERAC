@@ -7,10 +7,6 @@ local uuidMap = {
 	testTiles_big = "64b72878-c4be-4e9c-8ba8-37e3654de003",
 }
 
-local dirtMap = {
-
-}
-
 function terrainGen.new(seed)
 	return setmetatable({
 		seed = seed,
