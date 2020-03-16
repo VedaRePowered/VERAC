@@ -11,6 +11,7 @@ function love.load()
 	load "menu"
 	load "entity"
 	load "particles"
+	load "generation.basicGen"
 
 	s.camera = f.camera.new()
 	s.world = f.world.new(64)
@@ -18,11 +19,13 @@ function love.load()
 	s.buttonMap = f.buttons.new(1)
 
 	s.mainPlayer = f.player.new({1, 0, 0})
-	s.mainPlayer:warpTo(31, 55)
+	s.mainPlayer:warpTo(5, 10)
 
 	s.world.tileset:loadAssetPack("testTiles")
 	s.world.tileset:loadAssetPack("tiles/dirt")
-	s.terrainGenerator:generateNext(s.world, 100)
+	local newWorld = f["generation.basicGen"].world()
+	print(newWorld)
+	s.terrainGenerator:loadIntoWorld(s.world, newWorld)
 
 	s.testEntity = f.entity.new(32, 60, 2, 1.5, {"fox.png", "fox2.png", "fox3.png"}, 75, 4, function()s.testEntity.direction=not s.testEntity.direction end)
 	s.testEntity.direction = false
