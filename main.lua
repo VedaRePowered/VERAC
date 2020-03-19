@@ -7,9 +7,9 @@ end
 function love.load()
 	print = require "func.print"
 	mode = new "mode"
-	mode:start "game" -- initialize the game
-	mode:start "mainMenu" -- initialize the main menu
-	mode:switch "mainMenu"
+	mode:create "game" -- initialize the game
+	mode:create "mainMenu" -- initialize the main menu
+	mode:switch "game"
 end
 
 function love.update(delta)

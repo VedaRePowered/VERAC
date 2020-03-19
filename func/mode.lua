@@ -4,13 +4,13 @@ function mode.new()
 	return setmetatable({stateModules={}, stateClasses={}, state="start"}, {__index=mode})
 end
 
-function mode:switch(state)
-	self.state = state
-	assert(self.stateClasses[state], "Switched to " .. tostring(state) .. " before it was started.")
+function mode:create(state, ...)
+	self.stateClasses[state] = new(state, ...)
 end
 
-function mode:start(state, ...)
-	self.stateClasses[state] = new(state, ...)
+function mode:switch(state)
+	self.state = state
+	assert(self.stateClasses[state], "Switched to " .. tostring(state) .. " before it was created.")
 end
 
 function mode:update(...)
