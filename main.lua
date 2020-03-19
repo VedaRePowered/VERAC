@@ -1,58 +1,41 @@
-local f = {} -- f for 'functions'
-local s = {} -- s for 'state'
+local f, test, game = {}, {} -- f for 'functions'
 function love.load()
-	local function load(module) f[tostring(module)] = require("func." .. tostring(module)) end -- helper to load 1 library/class
-	load "camera"
-	load "world"
-	load "terrainGen"
-	load "buttons"
-	load "player"
-	load "menu"
-	load "entity"
-	load "particles"
+	f.game = require "func.game"
+	f.game.load()
+	f.entity = require "func.entity"
+	f.particles = require "func.particles"
 
-	s.camera = f.camera.new()
-	s.world = f.world.new(64)
-	s.terrainGenerator = f.terrainGen.new(math.random(0, 0xFFFFFFFF))
-	s.buttonMap = f.buttons.new(1)
+	game = f.game.new()
 
-	s.mainPlayer = f.player.new({1, 0, 0})
-	s.mainPlayer:warpTo(31, 55)
+	test.testEntity = f.entity.new(32, 60, 2, 1.5, {"fox.png", "fox2.png", "fox3.png"}, 75, 4, function()s.testEntity.direction = not s.testEntity.direction end)
+	test.testEntity.direction = false
 
-	s.world.tileset:loadAssetPack("testTiles")
-	s.terrainGenerator:generateNext(s.world, 100)
-
-	s.testEntity = f.entity.new(32, 60, 2, 1.5, {"fox.png", "fox2.png", "fox3.png"}, 75, 4, function()s.testEntity.direction = not s.testEntity.direction end)
-	s.testEntity.direction = false
-
-	s.testParticles = f.particles.new()
-	s.testParticles:add("dirt")
+	test.testParticles = f.particles.new()
+	test.testParticles:add("dirt")
 end
 
 function love.update(delta)
-	local k = s.buttonMap:get()
-	s.mainPlayer:updateLocal(s.world, s.camera, delta, k)
-	if s.testEntity.direction then
-		s.testEntity:accelerate(-delta*10, 0)
+	local k = game.state.buttonMap:get()
+	game:update(delta, k)
+	if test.testEntity.direction then
+		test.testEntity:accelerate(-delta*10, 0)
 	else
-		s.testEntity:accelerate(delta*10, 0)
+		test.testEntity:accelerate(delta*10, 0)
 	end
 	if math.random(1, 50) == 1 then
-		s.testEntity:accelerate(0, 20)
+		test.testEntity:accelerate(0, 20)
 	end
-	s.testEntity:update(s.world, delta)
+	test.testEntity:update(game.state.world, delta)
 
 	if math.random() < 0.01 then
-		s.testParticles:instance("dirt", s.mainPlayer.collider.x, s.mainPlayer.collider.y-1)
+		test.testParticles:instance("dirt", game.state.mainPlayer.collider.x, game.state.mainPlayer.collider.y-1)
 	end
 
-	s.testParticles:update(delta)
+	test.testParticles:update(delta)
 end
 
 function love.draw()
-	s.world:draw(s.camera, "")
-	s.mainPlayer:draw(s.world, s.camera)
-	s.testEntity:draw(s.world, s.camera)
-	s.world:draw(s.camera, "foreground")
-	s.testParticles:draw(s.camera)
+	game:draw()
+	test.testEntity:draw(game.state.world, game.state.camera)
+	test.testParticles:draw(game.state.camera)
 end

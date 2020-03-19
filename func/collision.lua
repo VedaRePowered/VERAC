@@ -86,7 +86,6 @@ end
 function collision:onePass(world, delta)
 	local gx, gy = self.x+self.vx*delta, self.y+self.vy*delta -- goal
 	local hitX, hitY = {collision=false, newX=gx}, {collision=false, newY=gy}
-	local nx, ny = gx, gy -- output position
 	local hEdge, vEdge = self.width/2, self.height/2
 
 	local blocks = self:getPossibleCollisions(world, self.vx*delta, self.vy*delta)
