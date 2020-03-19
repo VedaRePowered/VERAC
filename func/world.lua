@@ -10,11 +10,10 @@ function world.new(width)
 end
 
 function world:clear(newWidth)
-	-- self.tiles = {}
-	-- if newWidth then
-	-- 	self.width = newWidth
-	-- end
-	print("debug")
+	self.tiles = {}
+	if newWidth then
+		self.width = newWidth
+	end
 end
 
 function world:newRow(y)

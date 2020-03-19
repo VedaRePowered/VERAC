@@ -22,10 +22,9 @@ function g2d:get(x,y)
 end
 
 function g2d:getSize()
-    local size = {x=5}
-    if self.w then size.x=self.w end
-    if self.h then size.x=self.h end
-    print("size gotten")
+    local size = {x=5,y=5}
+    if self.width then size.x=self.width end
+    if self.height then size.y=self.height end
     return size
 end
 

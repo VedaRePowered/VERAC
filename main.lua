@@ -1,7 +1,6 @@
 local f = {} -- f for 'functions'
 local s = {} -- s for 'state'
 function love.load()
-	print("hi")
 	local function load(module) f[tostring(module)] = require("func." .. tostring(module)) end -- helper to load 1 library/class
 	load "camera"
 	load "world"
@@ -23,8 +22,8 @@ function love.load()
 
 	s.world.tileset:loadAssetPack("testTiles")
 	s.world.tileset:loadAssetPack("tiles/dirt")
+	s.world.tileset:loadAssetPack("tiles/stone")
 	local newWorld = f["generation.basicGen"].world()
-	print(newWorld)
 	s.terrainGenerator:loadIntoWorld(s.world, newWorld)
 
 	s.testEntity = f.entity.new(32, 60, 2, 1.5, {"fox.png", "fox2.png", "fox3.png"}, 75, 4, function()s.testEntity.direction=not s.testEntity.direction end)
@@ -48,7 +47,7 @@ function love.update(delta)
 	s.testEntity:update(s.world, delta)
 
 	if math.random() < 0.01 then
-		s.testParticles:instance("dirt", s.mainPlayer.collider.x, s.mainPlayer.collider.y-1)
+		--s.testParticles:instance("dirt", s.mainPlayer.collider.x, s.mainPlayer.collider.y-1)
 	end
 
 	s.testParticles:update(delta)
