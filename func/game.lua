@@ -45,6 +45,10 @@ function game:update(delta)
 	end
 
 	self.testParticles:update(delta)
+
+	if k.debugKillPlayer.down then --DEBUG: Kill player on command
+		self.mainPlayer:kill()
+	end
 end
 
 function game:draw()

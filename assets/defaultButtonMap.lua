@@ -9,4 +9,5 @@ return {
 	cameraLookDown = {{type="key", keycode="down"}},
 	cameraLookLeft = {{type="key", keycode="left"}},
 	cameraLookRight = {{type="key", keycode="right"}},
+	debugKillPlayer = {{type="key", keycode="backspace"}}
 }
