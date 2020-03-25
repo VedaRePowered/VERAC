@@ -124,7 +124,7 @@ end
 
 function collision:slide(world, delta)
 	local hitX, hitY = self:onePass(world, delta)
-	if hitX.collision and hitY.collision then
+	if hitX.collision and hitY.collision and hitX.linear == hitY.linear then
 		local ox, oy, ovx, ovy = self.x, self.y, self.vx, self.vy
 		do
 			self.vy = 0

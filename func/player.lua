@@ -58,6 +58,7 @@ function player:updateLocal(world, cam, delta, k) -- update as if main player
 		self.onGround =  self.collider.vy == 0 and ovy < 0
 		self.onRightWall = self.collider.vx == 0 and ovx < 0
 		self.onLeftWall = self.collider.vx == 0 and ovx > 0
+		-- print(ovx, "->", self.collider.vx)
 
 		local xdm = (self.onGround and xGroundDrag or xAirDrag)^delta
 		local ydm = ((self.onLeftWall or self.onRightWall) and yGroundDrag or yAirDrag)^delta

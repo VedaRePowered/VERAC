@@ -35,14 +35,9 @@ function game:update(delta)
 	else
 		self.testEntity:accelerate(delta*10, 0)
 	end
-	if math.random(1, 50) == 1 then
-		self.testEntity:accelerate(0, 20)
-	end
 	self.testEntity:update(self.world, delta)
 
-	if math.random() < 0.01 then
-		self.testParticles:instance("dirt", self.mainPlayer.collider.x, self.mainPlayer.collider.y-1)
-	end
+	self.testParticles:instance("dirt", self.mainPlayer.collider.x, self.mainPlayer.collider.y-1)
 
 	self.testParticles:update(delta)
 

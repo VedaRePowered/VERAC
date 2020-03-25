@@ -39,6 +39,7 @@ function entity:update(world, delta)
 	self.collider:slide(world, delta)
 	self.onGround =  self.collider.vy == 0 and ovy < 0
 	self.onWall = self.collider.vx == 0 and ovx ~= 0
+	-- print(ovx, "->", self.collider.vx)
 	if self.onWall and self.hitCallback then
 		self:hitCallback()
 	end
