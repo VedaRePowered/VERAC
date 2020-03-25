@@ -13,7 +13,7 @@ function entity.new(x, y, width, height, textures, gravity, animationSpeed, hitC
 		loadedTextures[#loadedTextures]:setFilter("nearest", "nearest")
 	end
 	local e = {
-		collider = collision.new(width, height),
+		collider = new("collision", width, height),
 		textures = loadedTextures,
 		animationTimer = 0,
 		animationSpeed = animationSpeed or 1,
@@ -39,7 +39,6 @@ function entity:update(world, delta)
 	self.collider:slide(world, delta)
 	self.onGround =  self.collider.vy == 0 and ovy < 0
 	self.onWall = self.collider.vx == 0 and ovx ~= 0
-	-- print(ovx, "->", self.collider.vx)
 	if self.onWall and self.hitCallback then
 		self:hitCallback()
 	end

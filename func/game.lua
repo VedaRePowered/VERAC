@@ -13,7 +13,6 @@ function game.new()
 			75, 4, function(self)
 				self.direction = not self.direction
 			end),
-		testParticles = new "particles",
 	}, {__index=game})
 	g.mainPlayer:warpTo(31, 55)
 
@@ -21,8 +20,6 @@ function game.new()
 	g.terrainGenerator:generateNext(g.world, 100)
 
 	g.testEntity.direction = false
-
-	g.testParticles:add("dirt")
 
 	return g
 end
@@ -37,10 +34,6 @@ function game:update(delta)
 	end
 	self.testEntity:update(self.world, delta)
 
-	self.testParticles:instance("dirt", self.mainPlayer.collider.x, self.mainPlayer.collider.y-1)
-
-	self.testParticles:update(delta)
-
 	if k.debugKillPlayer.down then --DEBUG: Kill player on command
 		self.mainPlayer:kill()
 	end
@@ -51,7 +44,6 @@ function game:draw()
 	self.mainPlayer:draw(self.world, self.camera)
 	self.testEntity:draw(self.world, self.camera)
 	self.world:draw(self.camera, "foreground")
-	self.testParticles:draw(self.camera)
 end
 
 return game

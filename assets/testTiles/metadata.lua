@@ -31,4 +31,12 @@ return {
 		collisionOnExtra = true,
 		renderRule = "",
 	},
+	{
+		uuid = "6f5e8d02-a467-4a58-b774-8cff35af66a5",
+		texture = "/spikes.png",
+		center = {x=0, y=0},
+		collisionOnBlock = true,
+		collisionOnExtra = false,
+		renderRule = "",
+	},
 }

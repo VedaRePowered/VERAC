@@ -5,6 +5,7 @@ local uuidMap = {
 	testTiles_grass = "7510ba13-f92c-4e73-86cc-e6e19d20159a",
 	testTiles_car = "584a1a1c-19ff-4e23-8cae-cd03b9491a6e",
 	testTiles_big = "64b72878-c4be-4e9c-8ba8-37e3654de003",
+	testTiles_spikes = "6f5e8d02-a467-4a58-b774-8cff35af66a5",
 }
 
 function terrainGen.new(seed)
@@ -22,6 +23,7 @@ function terrainGen:generateNext(world, amount)
 			end
 		elseif y == 50 then
 			world:setBlock(48, y, world.tileset.uuids[uuidMap["testTiles_big"]])
+			world:setBlock(40, y, world.tileset.uuids[uuidMap["testTiles_spikes"]])
 		elseif y == 51 then
 			world:setBlock(15, y, world.tileset.uuids[uuidMap["testTiles_car"]])
 		else

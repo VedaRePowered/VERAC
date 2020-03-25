@@ -30,7 +30,7 @@ function collision:getPossibleCollisions(world, dx, dy)
 				if t.decoCollide then
 					table.insert(possibleCollisions, {x = math.ceil(ix)+t.offset.x, y = math.ceil(iy)-t.offset.y, width=t.width+1, height=t.height+1})
 				elseif t.collide then
-					table.insert(possibleCollisions, {x = math.ceil(ix), y = math.ceil(iy), width=1, height=1})
+					table.insert(possibleCollisions, {x = math.ceil(ix), y = math.ceil(iy), width=1, height=1, uuid=tid})
 				end
 			end
 			for _, i in ipairs(block.intersecting) do
@@ -143,6 +143,7 @@ function collision:slide(world, delta)
 			self.x = hitX.newX
 			if hitX.collision then
 				self.vx = 0
+				print("stop")
 			end
 		else
 			self.x = hitX.newX
@@ -158,6 +159,7 @@ function collision:slide(world, delta)
 		self.x = hitX.newX
 		if hitX.collision then
 			self.vx = 0
+			print("stop")
 		end
 	elseif hitX.collision then
 		self.vx = 0

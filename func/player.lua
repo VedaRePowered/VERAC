@@ -12,8 +12,11 @@ local jumpGravity = 35
 local gravity = 75
 
 function player.new(colour)
+	groundParticles = new("particles")
+	groundParticles:add("dirt")
 	return setmetatable({
-		collider = collision.new(2, 2),
+		groundParticles = groundParticles,
+		collider = new("collision", 2, 2),
 		colour = colour,
 		onGround = false,
 		onLeftWall = false,
@@ -55,10 +58,14 @@ function player:updateLocal(world, cam, delta, k) -- update as if main player
 
 		local ovx, ovy = self.collider.vx, self.collider.vy
 		local xCollider, yCollider = self.collider:slide(world, delta) -- store colliders for drag
+		if (xCollider and xCollider.uuid == "6f5e8d02-a467-4a58-b774-8cff35af66a5") or
+			(yCollider and yCollider.uuid == "6f5e8d02-a467-4a58-b774-8cff35af66a5") then
+			self:kill()
+			return
+		end
 		self.onGround =  self.collider.vy == 0 and ovy < 0
 		self.onRightWall = self.collider.vx == 0 and ovx < 0
 		self.onLeftWall = self.collider.vx == 0 and ovx > 0
-		-- print(ovx, "->", self.collider.vx)
 
 		local xdm = (self.onGround and xGroundDrag or xAirDrag)^delta
 		local ydm = ((self.onLeftWall or self.onRightWall) and yGroundDrag or yAirDrag)^delta
@@ -67,6 +74,12 @@ function player:updateLocal(world, cam, delta, k) -- update as if main player
 		local tyv = (xCollider and xCollider.dy or 0)*(1/ydm-1)
 		self.collider.vx = (self.collider.vx + txv) * xdm
 		self.collider.vy = (self.collider.vy + tyv) * ydm
+
+		-- add running particles
+		if math.random() < math.abs(self.collider.vx/30) and self.onGround then
+			self.groundParticles:instance("dirt", self.collider.x+math.random()*2-1, self.collider.y-1)
+		end
+		self.groundParticles:update(delta)
 
 		-- update safeLocation
 		if self.onGround then
@@ -110,6 +123,7 @@ function player:draw(world, cam)
 	local sx, sy = cam:toScreenPosition(self.collider.x-1, self.collider.y+1)
 	love.graphics.rectangle("fill", sx, sy, ss, ss)
 	love.graphics.setColor(1, 1, 1)
+	self.groundParticles:draw(cam)
 end
 
 return player
