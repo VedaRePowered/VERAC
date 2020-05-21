@@ -55,7 +55,7 @@ function collision:getPossibleCollisions(world, dx, dy)
 	return possibleCollisions
 end
 
-function collision:singleFaceCollide(px1, py1, px2, py2, lx1, lx2, ly) -- x and y could be swapped and it would still work
+function collision:singleFaceCollide(px1, py1, px2, py2, lx1, lx2, ly, vFace) -- x and y could be swapped and it would still work
 	local swapped = false
 	-- sort
 	if py1 > py2 then
@@ -70,7 +70,7 @@ function collision:singleFaceCollide(px1, py1, px2, py2, lx1, lx2, ly) -- x and 
 		lx2 = tx
 	end
 
-	local pxl = self.width
+	local pxl = vFace and self.height or self.width
 	-- collide line moving from (px1, py1 to px1+pxl, py1) to (px2, py2 to px2+pxl, py2) with line (lx1, ly, lx2, ly)
 	local nLy = (ly-py1)/(py2-py1) -- new line y (interpl for intersecting y)
 	if nLy < 0 or nLy > 1 then
@@ -93,12 +93,12 @@ function collision:onePass(world, delta)
 	-- vertical collision
 	for _, b in pairs(blocks) do
 		if self.vy*delta > 0 then
-			local colliding = self:singleFaceCollide(self.x-hEdge, self.y+vEdge, gx-hEdge, gy+vEdge, b.x, b.x+b.width, b.y-b.height)
+			local colliding = self:singleFaceCollide(self.x-hEdge, self.y+vEdge, gx-hEdge, gy+vEdge, b.x, b.x+b.width, b.y-b.height, false)
 			if colliding and (not hitY.collision or colliding < hitY.linear) then
 				hitY = {collision=true, collider=b, linear=colliding, newY=b.y-b.height-vEdge}
 			end
 		elseif self.vy*delta < 0 then
-			local colliding = self:singleFaceCollide(self.x-hEdge, self.y-vEdge, gx-hEdge, gy-vEdge, b.x, b.x+b.width, b.y)
+			local colliding = self:singleFaceCollide(self.x-hEdge, self.y-vEdge, gx-hEdge, gy-vEdge, b.x, b.x+b.width, b.y, false)
 			if colliding and (not hitY.collision or colliding < hitY.linear) then
 				hitY = {collision=true, collider=b, linear=colliding, newY=b.y+vEdge}
 			end
@@ -107,12 +107,12 @@ function collision:onePass(world, delta)
 	-- horizontal collision
 	for _, b in pairs(blocks) do
 		if self.vx*delta > 0 then
-			local colliding = self:singleFaceCollide(self.y-vEdge, self.x+hEdge, gy-vEdge, gx+hEdge, b.y, b.y-b.height, b.x)
+			local colliding = self:singleFaceCollide(self.y-vEdge, self.x+hEdge, gy-vEdge, gx+hEdge, b.y, b.y-b.height, b.x, true)
 			if colliding and (not hitX.collision or colliding < hitX.linear) then
 				hitX = {collision=true, collider=b, linear=colliding, newX=b.x-hEdge}
 			end
 		elseif self.vx*delta < 0 then
-			local colliding = self:singleFaceCollide(self.y-vEdge, self.x-hEdge, gy-vEdge, gx-hEdge, b.y, b.y-b.height, b.x+b.width)
+			local colliding = self:singleFaceCollide(self.y-vEdge, self.x-hEdge, gy-vEdge, gx-hEdge, b.y, b.y-b.height, b.x+b.width, true)
 			if colliding and (not hitX.collision or colliding < hitX.linear) then
 				hitX = {collision=true, collider=b, linear=colliding, newX=b.x+b.width+hEdge}
 			end
