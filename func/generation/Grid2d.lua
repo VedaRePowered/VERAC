@@ -33,6 +33,7 @@ function g2d:fill(x1,y1,x2,y2,newValue)
 
 end
 
+--merge modes
 function g2d:merge(posx,posy,mergeGrid,resizeX,resizeY)
     local size = mergeGrid:getSize()
     for y=1, size.y do

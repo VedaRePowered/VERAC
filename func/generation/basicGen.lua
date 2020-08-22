@@ -11,11 +11,22 @@ function basicPlatforms()
     return room
 end
 
-function noise()
+function platforms1(platformMaterial,wallsMaterial)
+    local function platform(x,y,length)
+        local platform = g2d.new(length,1)
+        for x=x,x+length do 
+            platform:set(x,1)
+        end
+        return platform
+    end
+end
+
+function noise(components)
     --generates noisy texture on either side of walls as proof of concept
     local room = g2d.new(10,20)
     local function noisewall(x1,y1,x2,y2)
-        local noisecomponents = {"dirt","stone"}
+        local noisecomponents = components
+        -- {"dirt","stone"}
         for y=y1, y2 do 
             for x=x1, x2 do 
                 room:set(x,y,noisecomponents[math.random(1,2)])
@@ -38,8 +49,9 @@ function debug()
 end
 
 function gen.world()
- local levels = {basicPlatforms,noise,debug}
- return levels[1]()
+--  local levels = {basicPlatforms,noise,debug}
+--  return levels[1]()
+    return basicPlatforms()
 end
 
 return gen
